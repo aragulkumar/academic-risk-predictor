@@ -1,0 +1,229 @@
+import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+import api from '../api/client'
+import Sidebar from '../components/Sidebar'
+import RiskBadge from '../components/RiskBadge'
+import LoadingSpinner from '../components/LoadingSpinner'
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, ReferenceLine, Area, AreaChart,
+} from 'recharts'
+
+const RISK_COLORS = { low: '#2dd4bf', medium: '#f59e0b', high: '#f97316', critical: '#ef4444' }
+
+const GOALS = [
+  { id: 1, label: 'Attend all classes this week', target: 5, unit: 'days' },
+  { id: 2, label: 'Submit all assignments on time', target: 3, unit: 'tasks' },
+  { id: 3, label: 'Score above 70 in next test', target: 70, unit: 'marks' },
+]
+
+export default function StudentDashboard() {
+  const { user } = useAuth()
+  const [scores, setScores] = useState([])
+  const [student, setStudent] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [progress, setProgress] = useState({ 1: 3, 2: 2, 3: 55 })
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        // Find student profile linked to this user
+        const res = await api.get(`/api/students/${user.id}`)
+        setStudent(res.data)
+        const scoreRes = await api.get(`/api/students/${res.data.id}/risk-scores`)
+        setScores(scoreRes.data.reverse().map((r, i) => ({
+          week: `W${i + 1}`,
+          score: r.score,
+          level: r.risk_level,
+          date: new Date(r.computed_at).toLocaleDateString(),
+        })))
+      } catch {
+        // Show demo data if no backend connection
+        setScores([
+          { week: 'W1', score: 32, level: 'low' },
+          { week: 'W2', score: 41, level: 'medium' },
+          { week: 'W3', score: 58, level: 'medium' },
+          { week: 'W4', score: 44, level: 'medium' },
+          { week: 'W5', score: 29, level: 'low' },
+        ])
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [user])
+
+  const latest = scores[scores.length - 1]
+  const prev = scores[scores.length - 2]
+  const trend = latest && prev ? +(latest.score - prev.score).toFixed(1) : null
+  const level = latest?.level ?? 'low'
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.[0]) return null
+    const d = payload[0].payload
+    return (
+      <div className="bg-surface-card border border-surface-border rounded-xl p-3 text-xs shadow-xl">
+        <p className="text-gray-400">{d.date ?? d.week}</p>
+        <p className="text-base font-bold text-gray-100">{d.score?.toFixed(1)}<span className="text-gray-500"> / 100</span></p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <main className="flex-1 p-8 overflow-auto">
+        <div className="max-w-4xl mx-auto animate-fade-in">
+
+          {/* Welcome header */}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-100">
+                Hey, {user?.name?.split(' ')[0]} 👋
+              </h1>
+              <p className="text-gray-500 text-sm mt-1">Here's your academic wellness snapshot for this week</p>
+            </div>
+            <RiskBadge level={level} />
+          </div>
+
+          {loading ? <LoadingSpinner /> : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+              {/* Risk Score Card */}
+              <div className="lg:col-span-1">
+                <div className="card h-full" style={{ borderColor: RISK_COLORS[level] + '33' }}>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Current Risk Score</p>
+                  <div className="flex items-end gap-2 mb-4">
+                    <span className="text-6xl font-black tabular-nums" style={{ color: RISK_COLORS[level] }}>
+                      {latest?.score?.toFixed(0) ?? '—'}
+                    </span>
+                    <span className="text-gray-500 text-lg pb-1">/ 100</span>
+                  </div>
+
+                  {/* Ring progress */}
+                  <div className="flex justify-center my-5">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="#21262d" strokeWidth="10" />
+                      <circle cx="60" cy="60" r="50" fill="none"
+                        stroke={RISK_COLORS[level]} strokeWidth="10"
+                        strokeLinecap="round"
+                        strokeDasharray={`${Math.PI * 100}`}
+                        strokeDashoffset={`${Math.PI * 100 * (1 - (latest?.score ?? 0) / 100)}`}
+                        transform="rotate(-90 60 60)"
+                        style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+                      />
+                      <text x="60" y="65" textAnchor="middle" fill={RISK_COLORS[level]} fontSize="20" fontWeight="700">
+                        {level.toUpperCase()[0]}
+                      </text>
+                    </svg>
+                  </div>
+
+                  {trend !== null && (
+                    <div className={`flex items-center gap-1 text-sm font-medium ${trend > 0 ? 'text-red-400' : 'text-teal-400'}`}>
+                      <span>{trend > 0 ? '↑' : '↓'}</span>
+                      <span>{Math.abs(trend)} pts vs last week</span>
+                    </div>
+                  )}
+
+                  <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+                    {level === 'low' && "You're doing great! Keep up your attendance and submission streak."}
+                    {level === 'medium' && "Some improvement areas detected. Focus on attendance and timely submissions."}
+                    {level === 'high' && "Your risk is elevated. Please connect with your mentor for support."}
+                    {level === 'critical' && "Urgent attention needed. Your mentor has been notified and is ready to help."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Right column */}
+              <div className="lg:col-span-2 space-y-6">
+
+                {/* Trajectory */}
+                <div className="card">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Academic Trajectory</p>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={scores}>
+                        <defs>
+                          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#5c7cfa" stopOpacity={0.2} />
+                            <stop offset="95%" stopColor="#5c7cfa" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
+                        <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#6b7280' }} />
+                        <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#6b7280' }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <ReferenceLine y={70} stroke="#ef444444" strokeDasharray="4 4"
+                          label={{ value: 'Alert threshold', fill: '#ef4444', fontSize: 10, position: 'right' }} />
+                        <Area type="monotone" dataKey="score" stroke="#5c7cfa" strokeWidth={2.5}
+                          fill="url(#areaGrad)" dot={{ r: 4, fill: '#5c7cfa', strokeWidth: 0 }}
+                          activeDot={{ r: 6 }} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Goal tracker */}
+                <div className="card">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-5">Weekly Goal Tracker</p>
+                  <div className="space-y-5">
+                    {GOALS.map(goal => {
+                      const pct = Math.min(100, Math.round((progress[goal.id] / goal.target) * 100))
+                      const barColor = pct >= 100 ? '#2dd4bf' : pct >= 60 ? '#5c7cfa' : '#f59e0b'
+                      return (
+                        <div key={goal.id}>
+                          <div className="flex justify-between items-center mb-2">
+                            <p className="text-sm text-gray-300 font-medium">{goal.label}</p>
+                            <span className="text-xs tabular-nums text-gray-500">
+                              {progress[goal.id]} / {goal.target} {goal.unit}
+                            </span>
+                          </div>
+                          <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-700"
+                              style={{ width: `${pct}%`, background: barColor }} />
+                          </div>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-xs text-gray-600">{pct}% complete</span>
+                            {pct >= 100 && <span className="text-xs text-teal-400 font-semibold">🎉 Achieved!</span>}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Simulate progress buttons */}
+                  <div className="mt-5 pt-4 border-t border-surface-border">
+                    <p className="text-xs text-gray-600 mb-3">Update your progress:</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {GOALS.map(g => (
+                        <button key={g.id} onClick={() => setProgress(p => ({ ...p, [g.id]: Math.min(g.target, p[g.id] + 1) }))}
+                          className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover hover:bg-surface-border border border-surface-border text-gray-400 hover:text-gray-200 transition-colors">
+                          +1 {g.unit.slice(0, -1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Motivational tip */}
+                <div className="card border-brand-700/30 bg-brand-600/5">
+                  <div className="flex gap-4">
+                    <div className="text-2xl shrink-0">💡</div>
+                    <div>
+                      <p className="text-sm font-semibold text-brand-300 mb-1">Growth Insight</p>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        Students who attend &gt;85% of classes improve their risk score by an average of
+                        <span className="text-brand-400 font-semibold"> 22 points</span> within 3 weeks.
+                        Your attendance is the highest-impact factor — you've got this!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  )
+}
