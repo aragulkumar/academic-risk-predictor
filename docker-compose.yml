@@ -1,34 +1,38 @@
 version: "3.9"
 
 services:
+  # ── Backend ─────────────────────────────────────────────────
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: arp_backend
     ports:
       - "8000:8000"
     env_file:
       - ./backend/.env
     volumes:
-      - ./ml/models:/app/ml/models
-    depends_on:
-      - pgbouncer
+      - ./ml/models:/app/ml/models:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # ── Frontend ─────────────────────────────────────────────────
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: arp_frontend
     ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:8000
-
-  # Optional local PgBouncer connection pooler (skip if using Neon directly)
-  pgbouncer:
-    image: edoburu/pgbouncer
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-    ports:
-      - "5432:5432"
-    profiles:
-      - local-db
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 networks:
   default:
+    name: arp_network
     driver: bridge
