@@ -5,6 +5,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.assessment import Assessment
+    from app.models.risk_score import RiskScore
+    from app.models.intervention import Intervention
+
 
 class Student(Base):
     __tablename__ = "students"

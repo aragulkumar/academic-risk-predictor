@@ -2,7 +2,7 @@
 Mentor API routes — intervention logging, student heatmap data, dashboard summary.
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +11,7 @@ from app.core.security import require_role
 from app.models.intervention import Intervention
 from app.models.risk_score import RiskScore
 from app.models.student import Student
-from app.schemas.risk import InterventionCreate, InterventionOut, RiskScoreOut
+from app.schemas.risk import InterventionCreate, InterventionOut
 
 router = APIRouter(prefix="/api/mentors", tags=["mentors"])
 
