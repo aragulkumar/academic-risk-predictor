@@ -70,11 +70,26 @@ async def add_assessment(
     db: AsyncSession = Depends(get_db),
     _: dict = Depends(require_role("admin", "mentor")),
 ):
+    from fastapi import BackgroundTasks
     payload.student_id = student_id
     assessment = Assessment(**payload.model_dump())
     db.add(assessment)
     await db.commit()
     await db.refresh(assessment)
+
+    # Auto-trigger ML prediction in background so API returns instantly
+    import asyncio
+    from app.core.database import AsyncSessionLocal
+    from app.services.risk_service import compute_and_save_risk as _compute
+
+    async def _run_prediction():
+        async with AsyncSessionLocal() as new_db:
+            try:
+                await _compute(student_id, new_db)
+            except Exception:
+                pass  # Don't fail the main request if ML is unavailable
+
+    asyncio.create_task(_run_prediction())
     return assessment
 
 
