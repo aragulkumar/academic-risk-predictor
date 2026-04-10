@@ -83,7 +83,6 @@ def train():
         learning_rate=0.08,
         subsample=0.8,
         colsample_bytree=0.8,
-        use_label_encoder=False,
         eval_metric="logloss",
         random_state=SEED,
     )
@@ -108,7 +107,7 @@ def train():
     y_pred = ensemble.predict(X_test)
     y_prob = ensemble.predict_proba(X_test)[:, 1]
 
-    print("\n── Evaluation ─────────────────────────────────")
+    print("\n-- Evaluation ---------------------------------")
     print(classification_report(y_test, y_pred, target_names=["Not At Risk", "At Risk"]))
     print(f"ROC-AUC: {roc_auc_score(y_test, y_prob):.4f}")
 
@@ -116,12 +115,13 @@ def train():
     joblib.dump(ensemble, os.path.join(MODELS_DIR, "ensemble_model.joblib"))
     joblib.dump(FEATURES, os.path.join(MODELS_DIR, "feature_names.joblib"))
 
-    # Save feature importance from XGB component
-    fi = dict(zip(FEATURES, xgb.feature_importances_))
+    # Save feature importance from fitted XGB component
+    fitted_xgb = ensemble.named_estimators_["xgb"]
+    fi = {feature: float(importance) for feature, importance in zip(FEATURES, fitted_xgb.feature_importances_)}
     with open(os.path.join(MODELS_DIR, "feature_importance.json"), "w") as f:
         json.dump(fi, f, indent=2)
 
-    print(f"\n✅ Model saved to {MODELS_DIR}/ensemble_model.joblib")
+    print(f"\n[OK] Model saved to {MODELS_DIR}/ensemble_model.joblib")
 
 
 if __name__ == "__main__":

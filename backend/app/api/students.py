@@ -11,8 +11,8 @@ from app.core.security import get_current_user, require_role
 from app.models.assessment import Assessment
 from app.models.risk_score import RiskScore
 from app.models.student import Student
-from app.schemas.risk import AssessmentOut, RiskScoreOut
-from app.schemas.student import AssessmentCreate, StudentCreate, StudentOut
+from app.schemas.risk import RiskScoreOut
+from app.schemas.student import AssessmentCreate, AssessmentOut, StudentCreate, StudentOut
 from app.services.risk_service import compute_and_save_risk
 
 router = APIRouter(prefix="/api/students", tags=["students"])
