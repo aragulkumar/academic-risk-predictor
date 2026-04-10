@@ -1,19 +1,37 @@
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.api import admin, auth, mentors, students
 from app.core.config import settings
-from app.core.database import create_tables
+from app.core.database import AsyncSessionLocal, create_tables
+
+logger = logging.getLogger(__name__)
+
+
+async def _keep_alive():
+    """Ping Neon every 4 min so it never cold-starts during active use."""
+    while True:
+        await asyncio.sleep(240)  # 4 minutes
+        try:
+            async with AsyncSessionLocal() as db:
+                await db.execute(text("SELECT 1"))
+        except Exception as e:
+            logger.warning("Keep-alive ping failed: %s", e)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create DB tables on startup (dev mode)
     if settings.ENVIRONMENT == "development":
         await create_tables()
+    # Start background keep-alive so Neon stays warm
+    task = asyncio.create_task(_keep_alive())
     yield
+    task.cancel()
 
 
 app = FastAPI(

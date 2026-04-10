@@ -5,10 +5,12 @@ from app.core.config import settings
 
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_pre_ping=True,
+    echo=False,           # Never log raw SQL — it adds significant overhead
+    pool_pre_ping=True,   # Detect dead connections before using them
     pool_size=5,
     max_overflow=10,
+    pool_recycle=300,     # Recycle connections every 5 min (beats Neon idle timeout)
+    connect_args={"server_settings": {"application_name": "academic-risk-predictor"}},
 )
 
 AsyncSessionLocal = async_sessionmaker(
