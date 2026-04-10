@@ -10,7 +10,6 @@ engine = create_async_engine(
     pool_size=5,
     max_overflow=10,
     pool_recycle=300,     # Recycle connections every 5 min (beats Neon idle timeout)
-    connect_args={"server_settings": {"application_name": "academic-risk-predictor"}},
 )
 
 AsyncSessionLocal = async_sessionmaker(
