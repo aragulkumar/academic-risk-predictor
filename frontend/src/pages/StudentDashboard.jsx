@@ -5,31 +5,53 @@ import Sidebar from '../components/Sidebar'
 import RiskBadge from '../components/RiskBadge'
 import LoadingSpinner from '../components/LoadingSpinner'
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Area, AreaChart,
+  XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Area, AreaChart,
 } from 'recharts'
 
 const RISK_COLORS = { low: '#2dd4bf', medium: '#f59e0b', high: '#f97316', critical: '#ef4444' }
 
-const GOALS = [
-  { id: 1, label: 'Attend all classes this week', target: 5, unit: 'days' },
-  { id: 2, label: 'Submit all assignments on time', target: 3, unit: 'tasks' },
-  { id: 3, label: 'Score above 70 in next test', target: 70, unit: 'marks' },
-]
+// Read-only metric card driven from real assessment data
+function MetricBar({ label, value, max = 100, unit = '%', color }) {
+  const pct = Math.min(100, Math.round((value / max) * 100))
+  const barColor = pct >= 85 ? '#2dd4bf' : pct >= 65 ? '#5c7cfa' : pct >= 50 ? '#f59e0b' : '#ef4444'
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-2">
+        <p className="text-sm text-gray-300 font-medium">{label}</p>
+        <span className="text-xs tabular-nums text-gray-400 font-semibold">
+          {typeof value === 'number' ? value.toFixed(1) : '—'}{unit}
+        </span>
+      </div>
+      <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-700"
+          style={{ width: `${pct}%`, background: barColor }}
+        />
+      </div>
+      <div className="flex items-center justify-between mt-1">
+        <span className="text-xs text-gray-600">{pct}% of target</span>
+        {pct >= 85 && <span className="text-xs text-teal-400 font-semibold">On Track</span>}
+        {pct < 50 && <span className="text-xs text-red-400 font-semibold">Needs Attention</span>}
+      </div>
+    </div>
+  )
+}
 
 export default function StudentDashboard() {
   const { user } = useAuth()
   const [scores, setScores] = useState([])
   const [student, setStudent] = useState(null)
+  const [assessment, setAssessment] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [progress, setProgress] = useState({ 1: 3, 2: 2, 3: 55 })
 
   useEffect(() => {
     const load = async () => {
       try {
-        // Find student profile linked to this user
         const res = await api.get(`/api/students/${user.id}`)
         setStudent(res.data)
+
+        // Fetch risk score history
         const scoreRes = await api.get(`/api/students/${res.data.id}/risk-scores`)
         setScores(scoreRes.data.reverse().map((r, i) => ({
           week: `W${i + 1}`,
@@ -37,8 +59,19 @@ export default function StudentDashboard() {
           level: r.risk_level,
           date: new Date(r.computed_at).toLocaleDateString(),
         })))
+
+        // Fetch latest assessment data (read-only)
+        try {
+          const asmRes = await api.get(`/api/students/${res.data.id}/assessments`)
+          if (asmRes.data?.length > 0) {
+            // Use the most recent assessment
+            setAssessment(asmRes.data[0])
+          }
+        } catch {
+          // assessments endpoint may not exist yet, ignore
+        }
       } catch {
-        // Show demo data if no backend connection
+        // Demo fallback when no backend connection
         setScores([
           { week: 'W1', score: 32, level: 'low' },
           { week: 'W2', score: 41, level: 'medium' },
@@ -137,7 +170,7 @@ export default function StudentDashboard() {
               {/* Right column */}
               <div className="lg:col-span-2 space-y-6">
 
-                {/* Trajectory */}
+                {/* Trajectory chart */}
                 <div className="card">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Academic Trajectory</p>
                   <div className="h-48">
@@ -153,8 +186,6 @@ export default function StudentDashboard() {
                         <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#6b7280' }} />
                         <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#6b7280' }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <ReferenceLine y={70} stroke="#ef444444" strokeDasharray="4 4"
-                          label={{ value: 'Alert threshold', fill: '#ef4444', fontSize: 10, position: 'right' }} />
                         <Area type="monotone" dataKey="score" stroke="#5c7cfa" strokeWidth={2.5}
                           fill="url(#areaGrad)" dot={{ r: 4, fill: '#5c7cfa', strokeWidth: 0 }}
                           activeDot={{ r: 6 }} />
@@ -163,46 +194,43 @@ export default function StudentDashboard() {
                   </div>
                 </div>
 
-                {/* Goal tracker */}
+                {/* Academic Metrics — READ ONLY from database */}
                 <div className="card">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-5">Weekly Goal Tracker</p>
-                  <div className="space-y-5">
-                    {GOALS.map(goal => {
-                      const pct = Math.min(100, Math.round((progress[goal.id] / goal.target) * 100))
-                      const barColor = pct >= 100 ? '#2dd4bf' : pct >= 60 ? '#5c7cfa' : '#f59e0b'
-                      return (
-                        <div key={goal.id}>
-                          <div className="flex justify-between items-center mb-2">
-                            <p className="text-sm text-gray-300 font-medium">{goal.label}</p>
-                            <span className="text-xs tabular-nums text-gray-500">
-                              {progress[goal.id]} / {goal.target} {goal.unit}
-                            </span>
-                          </div>
-                          <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
-                            <div className="h-full rounded-full transition-all duration-700"
-                              style={{ width: `${pct}%`, background: barColor }} />
-                          </div>
-                          <div className="flex items-center justify-between mt-1">
-                            <span className="text-xs text-gray-600">{pct}% complete</span>
-                            {pct >= 100 && <span className="text-xs text-teal-400 font-semibold">🎉 Achieved!</span>}
-                          </div>
-                        </div>
-                      )
-                    })}
+                  <div className="flex items-center justify-between mb-5">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Academic Metrics</p>
+                    <span className="text-xs text-gray-600 bg-surface-hover px-2 py-1 rounded-md">
+                      📊 From your dataset — read only
+                    </span>
                   </div>
 
-                  {/* Simulate progress buttons */}
-                  <div className="mt-5 pt-4 border-t border-surface-border">
-                    <p className="text-xs text-gray-600 mb-3">Update your progress:</p>
-                    <div className="flex gap-2 flex-wrap">
-                      {GOALS.map(g => (
-                        <button key={g.id} onClick={() => setProgress(p => ({ ...p, [g.id]: Math.min(g.target, p[g.id] + 1) }))}
-                          className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover hover:bg-surface-border border border-surface-border text-gray-400 hover:text-gray-200 transition-colors">
-                          +1 {g.unit.slice(0, -1)}
-                        </button>
-                      ))}
+                  {assessment ? (
+                    <div className="space-y-5">
+                      <MetricBar
+                        label="Attendance Rate"
+                        value={assessment.attendance_pct}
+                        unit="%"
+                      />
+                      <MetricBar
+                        label="Internal Assessment Score"
+                        value={assessment.internal_marks}
+                        unit=" / 100"
+                        max={100}
+                      />
+                      <MetricBar
+                        label="Assignment Submission Rate"
+                        value={assessment.assignment_submission_rate}
+                        unit="%"
+                      />
+                      <p className="text-xs text-gray-600 pt-2 border-t border-surface-border">
+                        Subject: <span className="text-gray-400">{assessment.subject}</span>
+                        &nbsp;·&nbsp; Semester: <span className="text-gray-400">{assessment.semester}</span>
+                      </p>
                     </div>
-                  </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-6">
+                      No assessment data available yet. Your mentor or admin will upload your scores.
+                    </p>
+                  )}
                 </div>
 
                 {/* Motivational tip */}
@@ -219,6 +247,7 @@ export default function StudentDashboard() {
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
           )}
