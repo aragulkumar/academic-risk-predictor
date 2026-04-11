@@ -133,7 +133,7 @@ export default function MentorDashboard() {
           {/* Gradient header */}
           <div
             className="px-8 py-6 border-b border-surface-border"
-            style={{ background: 'linear-gradient(135deg, var(--surface-card) 0%, color-mix(in srgb, var(--brand-500) 5%, var(--surface-card)) 100%)' }}
+            style={{ background: 'var(--surface-card)' }}
           >
             <div className="max-w-4xl">
               <div className="flex items-start justify-between mb-5">
@@ -262,9 +262,10 @@ export default function MentorDashboard() {
                         onClick={() => openStudent(s)}
                         className={`w-full text-left px-4 py-3.5 rounded-xl border transition-all duration-150 ${
                           selected?.student_id === s.student_id
-                            ? 'border-brand-600/50 bg-brand-600/5'
-                            : 'border-surface-border bg-surface-hover/40 hover:border-brand-600/40 hover:bg-surface-hover'
+                            ? 'border-brand-500/40'
+                            : 'border-surface-border hover:border-brand-500/30'
                         }`}
+                        style={{ background: selected?.student_id === s.student_id ? 'color-mix(in srgb, var(--brand-500) 5%, var(--surface-card))' : 'var(--surface-card)' }}
                       >
                         <div className="flex items-center gap-3">
                           <div

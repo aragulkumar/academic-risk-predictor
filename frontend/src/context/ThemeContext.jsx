@@ -5,12 +5,11 @@ const ThemeContext = createContext()
 export function ThemeProvider({ children }) {
   // Initialize theme from localStorage or default to system preference (or dark)
   const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('app-theme')
-    if (saved) return saved
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark'
-    }
-    return 'light'
+    try {
+      const saved = localStorage.getItem('app-theme')
+      if (saved === 'dark' || saved === 'light') return saved
+    } catch {}
+    return 'light' // default is always light / white
   })
 
   // Whenever theme changes, update document data-theme attribute

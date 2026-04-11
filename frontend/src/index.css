@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  /* ══════════════════════════════════════════════
+     LIGHT MODE (default) — Clean crisp white
+  ══════════════════════════════════════════════ */
   :root {
-    /* LIGHT MODE */
-    --brand-50: #eef2ff;
+    --brand-50:  #eef2ff;
     --brand-100: #e0e7ff;
     --brand-200: #c7d2fe;
     --brand-300: #a5b4fc;
@@ -16,24 +18,28 @@
     --brand-800: #3730a3;
     --brand-900: #312e81;
 
-    --risk-low: #059669;
-    --risk-medium: #d97706;
-    --risk-high: #ea580c;
-    --risk-critical: #dc2626;
+    --risk-low:      #059669;
+    --risk-medium:   #b45309;
+    --risk-high:     #c2410c;
+    --risk-critical: #b91c1c;
 
-    --surface-bg: #f1f5fa;
-    --surface-card: #ffffff;
-    --surface-border: #cbd5e1;
-    --surface-hover: #e8edf5;
+    /* Pure white UI */
+    --surface-bg:     #f0f4f9;
+    --surface-card:   #ffffff;
+    --surface-border: #d1d9e6;
+    --surface-hover:  #edf1f7;
 
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-muted: #64748b;
+    /* Very dark, high-contrast text */
+    --text-primary:   #0d1117;
+    --text-secondary: #3b4558;
+    --text-muted:     #64748b;
   }
 
+  /* ══════════════════════════════════════════════
+     DARK MODE
+  ══════════════════════════════════════════════ */
   [data-theme='dark'] {
-    /* DARK MODE */
-    --brand-50: #f0f4ff;
+    --brand-50:  #f0f4ff;
     --brand-100: #dbe4ff;
     --brand-200: #bac8ff;
     --brand-300: #91a7ff;
@@ -44,74 +50,97 @@
     --brand-800: #3b5bdb;
     --brand-900: #364fc7;
 
-    --risk-low: #2dd4bf;
-    --risk-medium: #f59e0b;
-    --risk-high: #f97316;
+    --risk-low:      #2dd4bf;
+    --risk-medium:   #f59e0b;
+    --risk-high:     #f97316;
     --risk-critical: #ef4444;
 
-    --surface-bg: #0d1117;
-    --surface-card: #161b22;
+    --surface-bg:     #0d1117;
+    --surface-card:   #161b22;
     --surface-border: #21262d;
-    --surface-hover: #1c2128;
+    --surface-hover:  #1c2128;
 
-    --text-primary: #f8fafc;
+    --text-primary:   #f1f5f9;
     --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    --text-muted:     #64748b;
   }
 
-  * { 
+  * {
     border-color: var(--surface-border);
-    @apply transition-colors duration-300; 
+    transition-property: background-color, border-color, color;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
   }
+
   body {
     background-color: var(--surface-bg);
     color: var(--text-primary);
     @apply font-sans antialiased;
     background-image:
-      radial-gradient(ellipse at 20% 10%, rgba(99,102,241,0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(79,70,229,0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.03) 0%, transparent 70%);
+      radial-gradient(ellipse at 15% 0%, rgba(99,102,241,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 90%, rgba(79,70,229,0.05) 0%, transparent 55%);
     background-attachment: fixed;
   }
-  ::-webkit-scrollbar { @apply w-1.5; }
+
+  [data-theme='dark'] body {
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(92,124,250,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.04) 0%, transparent 50%);
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background-color: var(--surface-bg); }
-  ::-webkit-scrollbar-thumb { 
+  ::-webkit-scrollbar-thumb {
     background-color: var(--surface-border);
-    @apply rounded-full; 
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
   }
 }
 
 @layer components {
+
+  /* ── Cards ────────────── */
   .card {
     background-color: var(--surface-card);
     border: 1px solid var(--surface-border);
-    @apply rounded-2xl p-6;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.05);
+    @apply rounded-2xl p-5;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
   }
   [data-theme='dark'] .card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.35);
   }
   .card-hover {
-    @apply card transition-all duration-200 hover:border-brand-500/60 hover:shadow-brand-500/10;
+    @apply card transition-all duration-200;
   }
+  .card-hover:hover {
+    border-color: color-mix(in srgb, var(--brand-500) 50%, transparent);
+  }
+
+  /* ── Buttons ──────────── */
   .btn-primary {
-    background-color: var(--brand-600);
-    color: white;
-    box-shadow: 0 10px 15px -3px color-mix(in srgb, var(--brand-500) 20%, transparent);
-    @apply font-semibold px-5 py-2.5 rounded-xl
-           transition-all duration-150 active:scale-95 shadow-lg
-           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+    background: linear-gradient(135deg, var(--brand-600), var(--brand-500));
+    color: #ffffff;
+    @apply font-semibold px-5 py-2.5 rounded-xl transition-all duration-150
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+           disabled:active:scale-100;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
   }
   .btn-primary:hover {
-    background-color: var(--brand-500);
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-400));
+    box-shadow: 0 6px 20px rgba(99,102,241,0.45);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: scale(0.97);
   }
 
   .btn-secondary {
     background-color: var(--surface-hover);
     border: 1px solid var(--surface-border);
     color: var(--text-primary);
-    @apply font-medium px-5 py-2.5
-           rounded-xl transition-all duration-150 active:scale-95;
+    @apply font-medium px-5 py-2.5 rounded-xl transition-all duration-150 active:scale-95;
   }
   .btn-secondary:hover {
     background-color: var(--surface-border);
@@ -120,57 +149,62 @@
   .btn-danger {
     color: var(--risk-critical);
     background-color: color-mix(in srgb, var(--risk-critical) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--risk-critical) 30%, transparent);
+    border: 1px solid color-mix(in srgb, var(--risk-critical) 25%, transparent);
     @apply flex items-center font-medium px-4 py-2 rounded-xl transition-all duration-150;
   }
   .btn-danger:hover {
-    background-color: color-mix(in srgb, var(--risk-critical) 20%, transparent);
+    background-color: color-mix(in srgb, var(--risk-critical) 18%, transparent);
   }
 
+  /* ── Inputs ───────────── */
   .input {
     background-color: var(--surface-hover);
     border: 1px solid var(--surface-border);
     color: var(--text-primary);
-    @apply rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 transition-all duration-150;
+    @apply rounded-xl px-4 py-2.5 w-full focus:outline-none transition-all duration-150;
   }
   .input:focus {
     border-color: var(--brand-500);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-500) 50%, transparent);
+    background-color: var(--surface-card);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 18%, transparent);
   }
   .input::placeholder {
     color: var(--text-muted);
   }
-  .label { 
+
+  /* ── Labels ───────────── */
+  .label {
     color: var(--text-secondary);
-    @apply block text-sm font-medium mb-1.5; 
+    @apply block text-sm font-semibold mb-1.5;
   }
+
+  /* ── Risk Badges ─────── */
   .badge-low {
     color: var(--risk-low);
-    background-color: color-mix(in srgb, var(--risk-low) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--risk-low) 20%, transparent);
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background-color: color-mix(in srgb, var(--risk-low) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--risk-low) 25%, transparent);
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold;
   }
   .badge-medium {
     color: var(--risk-medium);
-    background-color: color-mix(in srgb, var(--risk-medium) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--risk-medium) 20%, transparent);
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background-color: color-mix(in srgb, var(--risk-medium) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--risk-medium) 25%, transparent);
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold;
   }
   .badge-high {
     color: var(--risk-high);
-    background-color: color-mix(in srgb, var(--risk-high) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--risk-high) 20%, transparent);
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background-color: color-mix(in srgb, var(--risk-high) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--risk-high) 25%, transparent);
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold;
   }
   .badge-critical {
     color: var(--risk-critical);
-    background-color: color-mix(in srgb, var(--risk-critical) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--risk-critical) 20%, transparent);
-    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background-color: color-mix(in srgb, var(--risk-critical) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--risk-critical) 25%, transparent);
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold;
   }
-  .stat-card {
-    @apply card flex flex-col gap-1;
-  }
+
+  /* ── Nav ──────────────── */
   .nav-link {
     color: var(--text-secondary);
     @apply flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-150 text-sm font-medium;
@@ -179,32 +213,43 @@
     color: var(--text-primary);
     background-color: var(--surface-hover);
   }
-  
   .nav-link-active {
-    color: var(--brand-500);
+    color: var(--brand-600);
     background-color: color-mix(in srgb, var(--brand-500) 10%, transparent);
     border: 1px solid color-mix(in srgb, var(--brand-500) 20%, transparent);
     @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold;
   }
+  [data-theme='dark'] .nav-link-active {
+    color: var(--brand-400);
+  }
+
+  /* ── Misc ─────────────── */
   .section-title {
     color: var(--text-primary);
-    @apply text-lg font-semibold mb-4;
+    @apply text-base font-bold mb-4;
   }
-  .divider { 
+  .divider {
     border-top-color: var(--surface-border);
-    @apply border-t my-6; 
+    @apply border-t my-5;
   }
-}
-
-@layer utilities {
-  .animate-fade-in { animation: fadeIn 0.4s ease-out both; }
-  .animate-slide-up { animation: slideUp 0.4s ease-out both; }
+  .stat-card {
+    @apply card flex flex-col gap-1;
+  }
   .glass {
     background-color: color-mix(in srgb, var(--surface-card) 80%, transparent);
     border-color: var(--surface-border);
     @apply backdrop-blur-md border;
   }
   .text-gradient {
-    @apply bg-gradient-to-r from-brand-500 to-indigo-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-600 to-indigo-500 bg-clip-text text-transparent;
   }
+}
+
+@layer utilities {
+  .animate-fade-in  { animation: fadeIn  0.35s ease-out both; }
+  .animate-slide-up { animation: slideUp 0.35s ease-out both; }
+
+  @keyframes fadeIn  { from { opacity: 0; transform: translateY(6px);  } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin    { to { transform: rotate(360deg); } }
 }
