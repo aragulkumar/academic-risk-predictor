@@ -26,8 +26,25 @@ async def _keep_alive():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if settings.ENVIRONMENT == "development":
-        await create_tables()
+    # Always ensure tables exist, especially on new deployment DBs
+    await create_tables()
+    
+    # Auto-seed the deployment database if it's completely empty
+    from app.models.user import User
+    from sqlalchemy import select
+    try:
+        async with AsyncSessionLocal() as db:
+            result = await db.execute(select(User).limit(1))
+            if not result.scalar_one_or_none():
+                logger.info("Database is empty. Populating with live demo data...")
+                import seed_sqlite
+                import seed_demo_52
+                await seed_sqlite.seed()
+                await seed_demo_52.seed_52()
+                logger.info("✅ Auto-seed complete!")
+    except Exception as e:
+        logger.error(f"Auto-seed failed (if tables not ready): {e}")
+
     # Start background keep-alive so Neon stays warm
     task = asyncio.create_task(_keep_alive())
     yield
