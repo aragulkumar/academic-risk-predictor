@@ -5,29 +5,29 @@
 @layer base {
   :root {
     /* LIGHT MODE */
-    --brand-50: #e0e7ff;
-    --brand-100: #c7d2fe;
-    --brand-200: #a5b4fc;
-    --brand-300: #818cf8;
-    --brand-400: #6366f1;
-    --brand-500: #4f46e5;
-    --brand-600: #4338ca;
-    --brand-700: #3730a3;
-    --brand-800: #312e81;
-    --brand-900: #1e1b4b;
+    --brand-50: #eef2ff;
+    --brand-100: #e0e7ff;
+    --brand-200: #c7d2fe;
+    --brand-300: #a5b4fc;
+    --brand-400: #818cf8;
+    --brand-500: #6366f1;
+    --brand-600: #4f46e5;
+    --brand-700: #4338ca;
+    --brand-800: #3730a3;
+    --brand-900: #312e81;
 
-    --risk-low: #059669; /* darker teal for contrast */
+    --risk-low: #059669;
     --risk-medium: #d97706;
     --risk-high: #ea580c;
     --risk-critical: #dc2626;
 
-    --surface-bg: #f8fafc;
+    --surface-bg: #f1f5fa;
     --surface-card: #ffffff;
-    --surface-border: #e2e8f0;
-    --surface-hover: #f1f5f9;
+    --surface-border: #cbd5e1;
+    --surface-hover: #e8edf5;
 
     --text-primary: #0f172a;
-    --text-secondary: #475569;
+    --text-secondary: #334155;
     --text-muted: #64748b;
   }
 
@@ -68,8 +68,9 @@
     color: var(--text-primary);
     @apply font-sans antialiased;
     background-image:
-      radial-gradient(ellipse at 20% 10%, rgba(92,124,250,0.05) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.04) 0%, transparent 50%);
+      radial-gradient(ellipse at 20% 10%, rgba(99,102,241,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(79,70,229,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.03) 0%, transparent 70%);
     background-attachment: fixed;
   }
   ::-webkit-scrollbar { @apply w-1.5; }
@@ -84,7 +85,11 @@
   .card {
     background-color: var(--surface-card);
     border: 1px solid var(--surface-border);
-    @apply rounded-2xl p-6 shadow-xl shadow-black/5 dark:shadow-black/20;
+    @apply rounded-2xl p-6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.05);
+  }
+  [data-theme='dark'] .card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
   }
   .card-hover {
     @apply card transition-all duration-200 hover:border-brand-500/60 hover:shadow-brand-500/10;

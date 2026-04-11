@@ -57,6 +57,7 @@ async def get_heatmap(
 
         heatmap.append({
             "student_id": s.id,
+            "student_name": stu_user.name if stu_user else "Unknown",
             "name": stu_user.name if stu_user else "Unknown",
             "roll_number": s.roll_number,
             "department": s.department,

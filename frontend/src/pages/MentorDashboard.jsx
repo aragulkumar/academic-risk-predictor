@@ -106,7 +106,8 @@ export default function MentorDashboard() {
 
   const filtered = heatmap.filter(s =>
     s.roll_number.toLowerCase().includes(search.toLowerCase()) ||
-    s.department.toLowerCase().includes(search.toLowerCase())
+    s.department.toLowerCase().includes(search.toLowerCase()) ||
+    (s.student_name || s.name || '').toLowerCase().includes(search.toLowerCase())
   )
 
   const handleCsvUpload = async () => {
@@ -263,19 +264,23 @@ export default function MentorDashboard() {
                           : 'border-surface-border bg-surface-hover/50'}`}
                     >
                       <div className="flex items-center gap-4">
-                        {/* Risk bar */}
-                        <div className="w-2 h-10 rounded-full shrink-0"
-                          style={{ background: RISK_COLORS[s.risk_level] ?? '#374151' }} />
+                        {/* Avatar */}
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+                          style={{ background: RISK_COLORS[s.risk_level] + '22', color: RISK_COLORS[s.risk_level], border: `1.5px solid ${RISK_COLORS[s.risk_level]}44` }}
+                        >
+                          {(s.student_name || s.name || '?').charAt(0).toUpperCase()}
+                        </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-sm font-semibold text-text-primary">{s.roll_number}</span>
-                            <span className="text-text-secondary text-xs">·</span>
-                            <span className="text-text-secondary text-xs">{s.department} · Sem {s.semester}</span>
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-sm font-bold text-text-primary">{s.student_name || s.name}</span>
                             <RiskBadge level={s.risk_level} />
                           </div>
-                          {s.top_factors && (
-                            <p className="text-xs text-text-secondary truncate">{s.top_factors}</p>
-                          )}
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-xs text-text-secondary">{s.roll_number}</span>
+                            <span className="text-text-secondary text-xs">·</span>
+                            <span className="text-text-secondary text-xs">{s.department} · Sem {s.semester}</span>
+                          </div>
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-2xl font-bold tabular-nums" style={{ color: RISK_COLORS[s.risk_level] ?? '#6b7280' }}>
