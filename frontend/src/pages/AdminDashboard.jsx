@@ -203,11 +203,10 @@ export default function AdminDashboard() {
             <form onSubmit={handleCreateUser} className="flex-1 overflow-y-auto flex flex-col bg-surface-bg/30">
               <div className="p-6 space-y-6">
                 
-                {/* Role Selection */}
                 <div className="bg-white p-5 rounded-2xl border border-surface-border shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
                   <label className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3 block">Primary Role</label>
-                  <select className="input bg-surface-bg border-none font-semibold text-text-primary cursor-pointer hover:bg-surface-hover transition-colors" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+                  <select className="input cursor-pointer font-semibold" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
                     <option value="student">👨‍🎓 Student & Parent Pair</option>
                     <option value="mentor">👨‍🏫 Mentor</option>
                     <option value="admin">🛡️ Admin</option>

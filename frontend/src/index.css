@@ -158,15 +158,11 @@
 
   /* ── Inputs ───────────── */
   .input {
-    background-color: var(--surface-hover);
-    border: 1px solid var(--surface-border);
     color: var(--text-primary);
-    @apply rounded-xl px-4 py-2.5 w-full focus:outline-none transition-all duration-150;
+    @apply bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 w-full outline-none transition-all duration-150 hover:bg-gray-100 dark:hover:bg-gray-700;
   }
   .input:focus {
-    border-color: var(--brand-500);
-    background-color: var(--surface-card);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 18%, transparent);
+    @apply border-brand-500 bg-white dark:bg-gray-900 shadow-[0_0_0_3px_rgba(99,102,241,0.18)];
   }
   .input::placeholder {
     color: var(--text-muted);
