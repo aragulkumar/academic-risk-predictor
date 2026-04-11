@@ -30,6 +30,13 @@ export default function MentorDashboard() {
   const [uploadResult, setUploadResult] = useState(null)
   const [dragOver, setDragOver] = useState(false)
 
+  // Attendance Modal States
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false)
+  const [attendanceDate, setAttendanceDate] = useState(() => new Date().toISOString().split('T')[0])
+  const [attendanceSubject, setAttendanceSubject] = useState('General')
+  const [attendanceMap, setAttendanceMap] = useState({})
+  const [attendanceLoading, setAttendanceLoading] = useState(false)
+
   useEffect(() => { fetchData() }, [])
 
   const fetchData = async () => {
@@ -52,6 +59,35 @@ export default function MentorDashboard() {
       const intRes = await api.get(`/api/mentors/interventions/${s.student_id}`)
       setInterventions(intRes.data)
     } catch { toast.error('Failed to load student details') }
+  }
+
+  const openAttendanceModal = () => {
+    const initialMap = {}
+    heatmap.forEach(s => { initialMap[s.student_id] = true }) // Default to true (present)
+    setAttendanceMap(initialMap)
+    setShowAttendanceModal(true)
+  }
+
+  const submitAttendance = async () => {
+    setAttendanceLoading(true)
+    const records = Object.keys(attendanceMap).map(id => ({
+      student_id: parseInt(id),
+      is_present: attendanceMap[id]
+    }))
+
+    try {
+      await api.post('/api/attendance/bulk', {
+        date: attendanceDate,
+        subject: attendanceSubject,
+        records
+      })
+      toast.success('Batch attendance saved successfully!')
+      setShowAttendanceModal(false)
+    } catch {
+      toast.error('Failed to save attendance')
+    } finally {
+      setAttendanceLoading(false)
+    }
   }
 
   const logIntervention = async () => {
@@ -249,9 +285,20 @@ export default function MentorDashboard() {
                 />
               </div>
 
+              {/* Heatmap & Attendance Header */}
+              <div className="flex items-center justify-between mb-4 mt-8">
+                <h2 className="section-title mb-0">Student Risk Heatmap</h2>
+                <button
+                  onClick={openAttendanceModal}
+                  className="btn-secondary text-sm py-1.5 px-3 flex items-center gap-2"
+                  style={{ background: 'var(--surface-card)', borderColor: 'var(--brand-500)', color: 'var(--brand-600)' }}
+                >
+                  📅 Mark Daily Attendance
+                </button>
+              </div>
+
               {/* Heatmap */}
               <div className="card">
-                <h2 className="section-title">Student Risk Heatmap</h2>
                 {loading ? (
                   <LoadingSpinner />
                 ) : (
@@ -312,8 +359,14 @@ export default function MentorDashboard() {
         {/* ── Right sticky detail panel ── */}
         {selected && (
           <div
-            className="w-96 border-l border-surface-border bg-surface-card flex flex-col animate-fade-in"
-            style={{ position: 'sticky', top: 0, height: '100vh' }}
+            className="w-96 border-l border-surface-border flex flex-col animate-fade-in"
+            style={{
+              position: 'sticky',
+              top: 0,
+              height: '100vh',
+              background: 'var(--surface-card)',
+              borderLeftColor: 'var(--surface-border)',
+            }}
           >
             {/* Panel header */}
             <div
@@ -455,6 +508,69 @@ export default function MentorDashboard() {
                 </div>
               </div>
 
+            </div>
+          </div>
+        )}
+
+        {/* ── Attendance Modal ── */}
+        {showAttendanceModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+            <div className="bg-surface-card rounded-2xl w-[600px] max-w-[90vw] max-h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-surface-border">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-surface-border flex items-center justify-between bg-surface-hover/50">
+                <h2 className="text-lg font-bold text-text-primary">📋 Mark Daily Attendance</h2>
+                <button onClick={() => setShowAttendanceModal(false)} className="text-text-secondary hover:text-text-primary">✕</button>
+              </div>
+              
+              {/* Body */}
+              <div className="p-6 overflow-y-auto flex-1">
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="label">Date</label>
+                    <input type="date" className="input text-sm py-2" value={attendanceDate} onChange={e => setAttendanceDate(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="label">Subject / Session</label>
+                    <input type="text" className="input text-sm py-2" value={attendanceSubject} onChange={e => setAttendanceSubject(e.target.value)} placeholder="e.g., General, CS101" />
+                  </div>
+                </div>
+
+                <div className="border border-surface-border rounded-xl overflow-hidden">
+                  <div className="bg-surface-hover/80 px-4 py-2 border-b border-surface-border flex justify-between items-center text-xs font-bold text-text-secondary">
+                    <span>Student ({heatmap.length})</span>
+                    <div className="flex gap-4">
+                      <button onClick={() => {
+                        const m = {}; heatmap.forEach(s => m[s.student_id] = true); setAttendanceMap(m);
+                      }} className="text-brand-500 hover:underline">Mark All</button>
+                      <button onClick={() => {
+                        const m = {}; heatmap.forEach(s => m[s.student_id] = false); setAttendanceMap(m);
+                      }} className="text-red-500 hover:underline">Clear All</button>
+                    </div>
+                  </div>
+                  <div className="divide-y divide-surface-border">
+                    {heatmap.map(s => (
+                      <div key={s.student_id} className="px-4 py-3 flex items-center justify-between hover:bg-surface-hover/30 transition-colors">
+                        <div>
+                          <p className="text-sm font-semibold text-text-primary">{s.student_name || s.name}</p>
+                          <p className="text-xs text-text-secondary font-mono">{s.roll_number}</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" className="sr-only peer" checked={attendanceMap[s.student_id] ?? false} onChange={e => setAttendanceMap(prev => ({...prev, [s.student_id]: e.target.checked}))} />
+                          <div className="w-11 h-6 bg-red-500 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-surface-border bg-surface-hover/50 flex justify-end gap-3">
+                <button onClick={() => setShowAttendanceModal(false)} className="btn-secondary text-sm">Cancel</button>
+                <button onClick={submitAttendance} disabled={attendanceLoading} className="btn-primary text-sm min-w-32">
+                  {attendanceLoading ? 'Saving...' : 'Save Attendance'}
+                </button>
+              </div>
             </div>
           </div>
         )}

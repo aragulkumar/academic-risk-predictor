@@ -40,8 +40,15 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-64 shrink-0 flex flex-col border-r border-surface-border bg-surface-card"
-      style={{ position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}
+      className="w-64 shrink-0 flex flex-col border-r border-surface-border"
+      style={{
+        position: 'sticky',
+        top: 0,
+        height: '100vh',
+        overflowY: 'auto',
+        background: 'var(--surface-card)',
+        borderRightColor: 'var(--surface-border)',
+      }}
     >
       {/* ── Brand ─────────────────────────── */}
       <div className="px-5 py-5 border-b border-surface-border">

@@ -7,9 +7,12 @@ export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     try {
       const saved = localStorage.getItem('app-theme')
-      if (saved === 'dark' || saved === 'light') return saved
+      // Only honor explicitly saved preferences
+      if (saved === 'dark') return 'dark'
+      // Reset everything else to light (clears stale state)
+      localStorage.removeItem('app-theme')
     } catch {}
-    return 'light' // default is always light / white
+    return 'light'
   })
 
   // Whenever theme changes, update document data-theme attribute
