@@ -117,8 +117,7 @@ async def notify_parent(
         student_id=payload.student_id,
         mentor_id=current_user["id"],
         action_type="parent_notified",
-        notes=f"Automated notification sent to parent ({p.name}). Reason: {payload.reason}",
-        status="completed"
+        notes=f"Automated notification sent to parent ({p.name}). Reason: {payload.reason}"
     )
     db.add(intervention)
     await db.commit()
