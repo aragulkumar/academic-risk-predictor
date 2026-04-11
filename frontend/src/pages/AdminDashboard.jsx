@@ -108,8 +108,8 @@ export default function AdminDashboard() {
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-100">Admin Dashboard</h1>
-              <p className="text-gray-500 text-sm mt-1">Manage users, roles, and institution settings</p>
+              <h1 className="text-2xl font-bold text-text-primary">Admin Dashboard</h1>
+              <p className="text-text-secondary text-sm mt-1">Manage users, roles, and institution settings</p>
             </div>
             <button id="create-user-btn" onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
               <span>➕</span> Add User
@@ -130,14 +130,14 @@ export default function AdminDashboard() {
           <div className="card">
             <div className="flex items-center justify-between mb-5">
               <h2 className="section-title mb-0">All Users</h2>
-              <span className="text-xs text-gray-500">{users.length} total</span>
+              <span className="text-xs text-text-secondary">{users.length} total</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-surface-border">
                     {['Name', 'Email', 'Role', 'Status', 'Joined', 'Actions'].map(h => (
-                      <th key={h} className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left py-3 px-2 text-xs font-semibold text-text-secondary uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -146,13 +146,13 @@ export default function AdminDashboard() {
                     <tr key={u.id} className="hover:bg-surface-hover transition-colors">
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-surface-border flex items-center justify-center text-xs font-bold text-gray-300">
+                          <div className="w-7 h-7 rounded-lg bg-surface-border flex items-center justify-center text-xs font-bold text-text-primary">
                             {u.name[0].toUpperCase()}
                           </div>
-                          <span className="font-medium text-gray-200">{u.name}</span>
+                          <span className="font-medium text-text-primary">{u.name}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-2 text-gray-400">{u.email}</td>
+                      <td className="py-3 px-2 text-text-secondary">{u.email}</td>
                       <td className="py-3 px-2">
                         <span className={`font-semibold capitalize text-xs ${roleColors[u.role]}`}>{u.role}</span>
                       </td>
@@ -161,13 +161,13 @@ export default function AdminDashboard() {
                           {u.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
-                      <td className="py-3 px-2 text-gray-500 text-xs">
+                      <td className="py-3 px-2 text-text-secondary text-xs">
                         {new Date(u.created_at).toLocaleDateString()}
                       </td>
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2">
                           <button onClick={() => handleToggleActive(u)}
-                            className="text-xs text-gray-500 hover:text-gray-200 transition-colors px-2 py-1 rounded-lg hover:bg-surface-border">
+                            className="text-xs text-text-secondary hover:text-text-primary transition-colors px-2 py-1 rounded-lg hover:bg-surface-border">
                             {u.is_active ? 'Deactivate' : 'Activate'}
                           </button>
                           <button onClick={() => handleDelete(u.id)}
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
               {users.length === 0 && !loading && (
-                <div className="text-center py-12 text-gray-600">No users found</div>
+                <div className="text-center py-12 text-text-secondary">No users found</div>
               )}
             </div>
           </div>
@@ -193,8 +193,8 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="card w-full max-w-md animate-slide-up">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-100">Create New User</h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-300 text-xl">✕</button>
+              <h3 className="text-lg font-semibold text-text-primary">Create New User</h3>
+              <button onClick={() => setShowModal(false)} className="text-text-secondary hover:text-text-primary text-xl">✕</button>
             </div>
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div>
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
 
               {/* Base User Details */}
               <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2">
-                <div className="col-span-2"><h4 className="text-sm font-bold text-gray-300">{form.role === 'student' ? 'Student Details' : 'User Details'}</h4></div>
+                <div className="col-span-2"><h4 className="text-sm font-bold text-text-primary">{form.role === 'student' ? 'Student Details' : 'User Details'}</h4></div>
                 {[
                   { label: 'Full Name', key: 'name', type: 'text', placeholder: 'Name' },
                   { label: 'Email', key: 'email', type: 'email', placeholder: 'email@...' },
@@ -245,8 +245,8 @@ export default function AdminDashboard() {
 
               {/* Parent Details section */}
               {form.role === 'student' && (
-                 <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2 bg-purple-900/10 p-3 rounded-lg border border-purple-500/20">
-                   <div className="col-span-2"><h4 className="text-sm font-bold text-purple-300">Parent / Guardian Info</h4></div>
+                 <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2 bg-brand-500/5 p-3 rounded-lg border border-brand-500/20">
+                   <div className="col-span-2"><h4 className="text-sm font-bold text-brand-600">Parent / Guardian Info</h4></div>
                    {[
                      { label: "Parent's Name", key: 'parent_name', type: 'text', placeholder: 'Name' },
                      { label: "Parent's Email", key: 'parent_email', type: 'email', placeholder: 'email@...' },
@@ -254,8 +254,8 @@ export default function AdminDashboard() {
                      { label: "Parent's Password", key: 'parent_password', type: 'password', placeholder: '••••••••' },
                    ].map(({ label, key, type, placeholder }) => (
                       <div key={key}>
-                        <label className="label text-purple-200">{label}</label>
-                        <input type={type} className="input text-sm border-purple-500/30 focus:border-purple-500" placeholder={placeholder}
+                        <label className="label text-brand-600 opacity-90">{label}</label>
+                        <input type={type} className="input text-sm border-brand-500/30 focus:border-brand-500" placeholder={placeholder}
                           value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
                           required />
                       </div>
