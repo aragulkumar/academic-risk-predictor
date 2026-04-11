@@ -175,14 +175,15 @@
   }
 
   [data-theme='dark'] .input {
-    background-color: #1f2937;
-    border-color: #374151;
+    background-color: #0d1117;
+    border-color: #21262d;
   }
   [data-theme='dark'] .input:hover {
-    background-color: #374151;
+    background-color: #161b22;
   }
   [data-theme='dark'] .input:focus {
-    background-color: #111827;
+    background-color: #0d1117;
+    border-color: var(--brand-500);
   }
   .input::placeholder {
     color: var(--text-muted);

@@ -96,17 +96,17 @@ export default function Sidebar() {
               className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 transition-transform group-hover:scale-110"
               style={{ background: theme === 'dark' ? 'rgba(251,191,36,0.15)' : 'rgba(99,102,241,0.12)' }}
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === 'dark' ? '🌙' : '☀️'}
             </span>
-            <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+            <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
             <span
               className="ml-auto text-xs px-1.5 py-0.5 rounded-md font-semibold"
               style={{
-                background: theme === 'dark' ? 'rgba(251,191,36,0.12)' : 'rgba(99,102,241,0.10)',
-                color: theme === 'dark' ? '#fbbf24' : '#6366f1'
+                background: theme === 'dark' ? 'rgba(99,102,241,0.15)' : 'rgba(251,191,36,0.15)',
+                color: theme === 'dark' ? '#818cf8' : '#d97706'
               }}
             >
-              {theme === 'dark' ? 'ON' : 'OFF'}
+              ON
             </span>
           </button>
         </div>
