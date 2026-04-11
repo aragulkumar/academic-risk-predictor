@@ -59,22 +59,32 @@
     --text-muted: #64748b;
   }
 
-  * { @apply border-surface-border transition-colors duration-300; }
+  * { 
+    border-color: var(--surface-border);
+    @apply transition-colors duration-300; 
+  }
   body {
-    @apply bg-surface-bg text-text-primary font-sans antialiased;
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    @apply font-sans antialiased;
     background-image:
       radial-gradient(ellipse at 20% 10%, rgba(92,124,250,0.05) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.04) 0%, transparent 50%);
     background-attachment: fixed;
   }
   ::-webkit-scrollbar { @apply w-1.5; }
-  ::-webkit-scrollbar-track { @apply bg-surface-bg; }
-  ::-webkit-scrollbar-thumb { @apply bg-surface-border rounded-full; }
+  ::-webkit-scrollbar-track { background-color: var(--surface-bg); }
+  ::-webkit-scrollbar-thumb { 
+    background-color: var(--surface-border);
+    @apply rounded-full; 
+  }
 }
 
 @layer components {
   .card {
-    @apply bg-surface-card border border-surface-border rounded-2xl p-6 shadow-xl shadow-black/5 dark:shadow-black/20;
+    background-color: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    @apply rounded-2xl p-6 shadow-xl shadow-black/5 dark:shadow-black/20;
   }
   .card-hover {
     @apply card transition-all duration-200 hover:border-brand-500/60 hover:shadow-brand-500/10;
@@ -85,17 +95,26 @@
            disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
   .btn-secondary {
-    @apply bg-surface-hover hover:bg-surface-border text-text-primary font-medium px-5 py-2.5
-           rounded-xl border border-surface-border transition-all duration-150 active:scale-95;
+    background-color: var(--surface-hover);
+    border: 1px solid var(--surface-border);
+    color: var(--text-primary);
+    @apply hover:bg-surface-border font-medium px-5 py-2.5
+           rounded-xl transition-all duration-150 active:scale-95;
   }
   .btn-danger {
-    @apply bg-red-500/10 hover:bg-red-500/20 text-risk-critical border border-risk-critical/30
+    color: var(--risk-critical);
+    @apply bg-red-500/10 hover:bg-red-500/20 border border-risk-critical/30
            font-medium px-4 py-2 rounded-xl transition-all duration-150;
   }
   .input {
-    @apply bg-surface-hover border border-surface-border text-text-primary placeholder-text-muted
-           rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-brand-500/50
+    background-color: var(--surface-hover);
+    border: 1px solid var(--surface-border);
+    color: var(--text-primary);
+    @apply rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-brand-500/50
            focus:border-brand-500 transition-all duration-150;
+  }
+  .input::placeholder {
+    color: var(--text-muted);
   }
   .label { @apply block text-sm font-medium text-text-secondary mb-1.5; }
   .badge-low {
@@ -118,24 +137,32 @@
     @apply card flex flex-col gap-1;
   }
   .nav-link {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-secondary hover:text-text-primary
+    color: var(--text-secondary);
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl hover:text-text-primary
            hover:bg-surface-hover transition-all duration-150 text-sm font-medium;
   }
   .nav-link-active {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-brand-500 bg-brand-500/10
+    color: var(--brand-500);
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl bg-brand-500/10
            border border-brand-500/20 text-sm font-bold;
   }
   .section-title {
-    @apply text-lg font-semibold text-text-primary mb-4;
+    color: var(--text-primary);
+    @apply text-lg font-semibold mb-4;
   }
-  .divider { @apply border-t border-surface-border my-6; }
+  .divider { 
+    border-top-color: var(--surface-border);
+    @apply border-t my-6; 
+  }
 }
 
 @layer utilities {
   .animate-fade-in { animation: fadeIn 0.4s ease-out both; }
   .animate-slide-up { animation: slideUp 0.4s ease-out both; }
   .glass {
-    @apply backdrop-blur-md bg-surface-card/80 border border-surface-border;
+    background-color: color-mix(in srgb, var(--surface-card) 80%, transparent);
+    border-color: var(--surface-border);
+    @apply backdrop-blur-md border;
   }
   .text-gradient {
     @apply bg-gradient-to-r from-brand-500 to-indigo-500 bg-clip-text text-transparent;
