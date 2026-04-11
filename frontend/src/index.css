@@ -92,28 +92,45 @@
   .btn-primary {
     background-color: var(--brand-600);
     color: white;
-    @apply hover:bg-brand-500 font-semibold px-5 py-2.5 rounded-xl
-           transition-all duration-150 active:scale-95 shadow-lg shadow-brand-500/20
+    box-shadow: 0 10px 15px -3px color-mix(in srgb, var(--brand-500) 20%, transparent);
+    @apply font-semibold px-5 py-2.5 rounded-xl
+           transition-all duration-150 active:scale-95 shadow-lg
            disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
+  .btn-primary:hover {
+    background-color: var(--brand-500);
+  }
+
   .btn-secondary {
     background-color: var(--surface-hover);
     border: 1px solid var(--surface-border);
     color: var(--text-primary);
-    @apply hover:bg-surface-border font-medium px-5 py-2.5
+    @apply font-medium px-5 py-2.5
            rounded-xl transition-all duration-150 active:scale-95;
   }
+  .btn-secondary:hover {
+    background-color: var(--surface-border);
+  }
+
   .btn-danger {
     color: var(--risk-critical);
-    @apply bg-red-500/10 hover:bg-red-500/20 border border-risk-critical/30
-           font-medium px-4 py-2 rounded-xl transition-all duration-150;
+    background-color: color-mix(in srgb, var(--risk-critical) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--risk-critical) 30%, transparent);
+    @apply flex items-center font-medium px-4 py-2 rounded-xl transition-all duration-150;
   }
+  .btn-danger:hover {
+    background-color: color-mix(in srgb, var(--risk-critical) 20%, transparent);
+  }
+
   .input {
     background-color: var(--surface-hover);
     border: 1px solid var(--surface-border);
     color: var(--text-primary);
-    @apply rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-brand-500/50
-           focus:border-brand-500 transition-all duration-150;
+    @apply rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 transition-all duration-150;
+  }
+  .input:focus {
+    border-color: var(--brand-500);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-500) 50%, transparent);
   }
   .input::placeholder {
     color: var(--text-muted);
@@ -151,13 +168,18 @@
   }
   .nav-link {
     color: var(--text-secondary);
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl hover:text-text-primary
-           hover:bg-surface-hover transition-all duration-150 text-sm font-medium;
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-150 text-sm font-medium;
   }
+  .nav-link:hover {
+    color: var(--text-primary);
+    background-color: var(--surface-hover);
+  }
+  
   .nav-link-active {
     color: var(--brand-500);
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl bg-brand-500/10
-           border border-brand-500/20 text-sm font-bold;
+    background-color: color-mix(in srgb, var(--brand-500) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--brand-500) 20%, transparent);
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold;
   }
   .section-title {
     color: var(--text-primary);
