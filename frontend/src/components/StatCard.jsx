@@ -7,8 +7,8 @@ export default function StatCard({ icon, label, value, sub, color = 'brand' }) {
     orange:   'text-orange-600 bg-orange-600/10 border-orange-600/20',
   }
   return (
-    <div className="stat-card animate-slide-up bg-surface-card p-4 rounded-2xl border border-surface-border shadow-sm">
-      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center text-xl mb-3 ${colorMap[color] ?? colorMap.brand}`}>
+    <div className="card animate-slide-up p-5 flex flex-col justify-center">
+      <div className={`w-11 h-11 rounded-xl border flex items-center justify-center text-xl mb-3 ${colorMap[color] ?? colorMap.brand}`}>
         {icon}
       </div>
       <p className="text-2xl font-bold text-text-primary">{value}</p>
