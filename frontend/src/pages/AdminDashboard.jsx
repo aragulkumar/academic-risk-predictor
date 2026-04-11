@@ -146,7 +146,7 @@ export default function AdminDashboard() {
                     <tr key={u.id} className="hover:bg-surface-hover transition-colors">
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-surface-border flex items-center justify-center text-xs font-bold text-text-primary">
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-text-primary" style={{ background: 'var(--surface-hover)' }}>
                             {u.name[0].toUpperCase()}
                           </div>
                           <span className="font-medium text-text-primary">{u.name}</span>
@@ -191,10 +191,10 @@ export default function AdminDashboard() {
       {/* Create User Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="card w-full max-w-md animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden">
+          <div className="card w-full max-w-md animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden" style={{ background: 'var(--surface-card)' }}>
             
             {/* Header - Fixed */}
-            <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-surface-card">
+            <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0" style={{ background: 'var(--surface-card)' }}>
               <h3 className="text-lg font-semibold text-text-primary">Create New User</h3>
               <button onClick={() => setShowModal(false)} className="text-text-secondary hover:text-text-primary text-xl">✕</button>
             </div>
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                      ].map(({ label, key, type, placeholder }) => (
                         <div key={key}>
                           <label className="label text-brand-600 opacity-90">{label}</label>
-                          <input type={type} className="input text-sm border-brand-500/30 focus:border-brand-500 bg-surface-card" placeholder={placeholder}
+                          <input type={type} className="input text-sm border-brand-500/30 focus:border-brand-500" style={{ background: 'var(--surface-card)' }} placeholder={placeholder}
                             value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
                             required />
                         </div>
