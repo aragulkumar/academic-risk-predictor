@@ -3,11 +3,17 @@ import api from '../api/client'
 import Sidebar from '../components/Sidebar'
 import RiskBadge from '../components/RiskBadge'
 import LoadingSpinner from '../components/LoadingSpinner'
+import { useTheme } from '../context/ThemeContext'
 import toast from 'react-hot-toast'
 
 const RISK_COLORS = { low: '#2dd4bf', medium: '#f59e0b', high: '#f97316', critical: '#ef4444' }
 
 export default function ParentDashboard() {
+  const { theme } = useTheme()
+  const isLight = theme !== 'dark'
+  const hoverBg = isLight ? '#edf1f7' : '#1c2128'
+  const rowHoverBg = isLight ? '#f1f5f9' : '#1c212880' // slightly transparent for rows
+
   const [children, setChildren] = useState([])
   const [selectedChild, setSelectedChild] = useState(null)
   
@@ -112,7 +118,7 @@ export default function ParentDashboard() {
                       </div>
                       
                       {riskData?.advice && (
-                        <div className="mt-4 p-3 bg-surface-hover rounded-lg border border-surface-border">
+                        <div className="mt-4 p-3 rounded-lg border border-surface-border" style={{ backgroundColor: hoverBg }}>
                           <p className="text-sm text-text-primary">💡 <strong>Mentor's Advice:</strong> {riskData.advice}</p>
                         </div>
                       )}
@@ -128,7 +134,7 @@ export default function ParentDashboard() {
                         ) : (
                           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
                             {attendance.map(a => (
-                              <div key={a.id} className="flex items-center justify-between p-2 rounded bg-surface-hover text-sm border border-surface-border">
+                              <div key={a.id} className="flex items-center justify-between p-2 rounded text-sm border border-surface-border" style={{ backgroundColor: hoverBg }}>
                                 <div>
                                   <span className="font-medium text-text-primary">{new Date(a.date).toLocaleDateString()}</span>
                                   <span className="text-xs text-text-secondary ml-2">{a.subject}</span>
@@ -150,7 +156,7 @@ export default function ParentDashboard() {
                         ) : (
                           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
                             {assessments.map(a => (
-                              <div key={a.id} className="flex items-center justify-between p-2.5 rounded bg-surface-hover text-sm border border-surface-border">
+                              <div key={a.id} className="flex items-center justify-between p-2.5 rounded text-sm border border-surface-border" style={{ backgroundColor: hoverBg }}>
                                 <div>
                                   <p className="font-medium text-text-primary">{a.subject} <span className="text-xs text-text-secondary ml-1">Sem {a.semester}</span></p>
                                   <p className="text-xs text-text-secondary">Submissions: {a.assignment_submission_rate}% | Attendance: {a.attendance_pct}%</p>
@@ -174,7 +180,7 @@ export default function ParentDashboard() {
                       ) : (
                         <div className="overflow-x-auto">
                           <table className="w-full text-sm text-left">
-                            <thead className="text-xs uppercase text-text-secondary bg-surface-hover">
+                            <thead className="text-xs uppercase text-text-secondary" style={{ backgroundColor: hoverBg }}>
                               <tr>
                                 <th className="px-4 py-2 rounded-l-lg">Semester</th>
                                 <th className="px-4 py-2">Year</th>
@@ -186,7 +192,10 @@ export default function ParentDashboard() {
                             </thead>
                             <tbody>
                               {semResults.map(r => (
-                                <tr key={r.id} className="border-b border-surface-border last:border-0 hover:bg-surface-hover/50">
+                                <tr key={r.id} className="border-b border-surface-border last:border-0 transition-colors"
+                                  onMouseEnter={e => e.currentTarget.style.backgroundColor = rowHoverBg}
+                                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                                >
                                   <td className="px-4 py-3 font-medium text-text-primary">Semester {r.semester}</td>
                                   <td className="px-4 py-3 text-text-secondary">{r.academic_year}</td>
                                   <td className="px-4 py-3 font-semibold text-brand-600 dark:text-brand-400">{r.gpa?.toFixed(2) ?? '-'}</td>
