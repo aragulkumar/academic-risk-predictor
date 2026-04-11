@@ -7,7 +7,7 @@
      LIGHT MODE (default) — Clean crisp white
   ══════════════════════════════════════════════ */
   :root {
-    color-scheme: light;
+    color-scheme: light only;   /* ← prevents browser from ever auto-applying dark-mode native styles */
     --brand-50:  #eef2ff;
     --brand-100: #e0e7ff;
     --brand-200: #c7d2fe;

@@ -147,7 +147,7 @@ export default function StudentDashboard() {
                   {/* Ring progress */}
                   <div className="flex justify-center my-5">
                     <svg width="120" height="120" viewBox="0 0 120 120">
-                      <circle cx="60" cy="60" r="50" fill="none" stroke="#21262d" strokeWidth="10" />
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="var(--surface-border)" strokeWidth="10" />
                       <circle cx="60" cy="60" r="50" fill="none"
                         stroke={RISK_COLORS[level]} strokeWidth="10"
                         strokeLinecap="round"
@@ -169,7 +169,7 @@ export default function StudentDashboard() {
                     </div>
                   )}
 
-                  <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+                  <p className="mt-4 text-xs text-text-secondary leading-relaxed">
                     {level === 'low' && "You're doing great! Keep up your attendance and submission streak."}
                     {level === 'medium' && "Some improvement areas detected. Focus on attendance and timely submissions."}
                     {level === 'high' && "Your risk is elevated. Please connect with your mentor for support."}
@@ -183,7 +183,7 @@ export default function StudentDashboard() {
 
                 {/* Trajectory chart */}
                 <div className="card">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Academic Trajectory</p>
+                  <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-4">Academic Trajectory</p>
                   <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={scores}>
@@ -193,7 +193,7 @@ export default function StudentDashboard() {
                             <stop offset="95%" stopColor="#5c7cfa" stopOpacity={0} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--surface-border)" />
                         <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#6b7280' }} />
                         <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#6b7280' }} />
                         <Tooltip content={<CustomTooltip />} />

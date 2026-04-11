@@ -143,7 +143,12 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody className="divide-y divide-surface-border">
                   {users.map(u => (
-                    <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-surface-hover transition-colors group cursor-pointer">
+                    <tr
+                      key={u.id}
+                      className="transition-colors group cursor-pointer"
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                    >
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-xs font-bold text-brand-600 border border-brand-100">
@@ -196,7 +201,12 @@ export default function AdminDashboard() {
             {/* Header - Fixed */}
             <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-surface-card">
               <h3 className="text-xl font-bold text-text-primary">Create New User</h3>
-              <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-gray-100 dark:hover:bg-surface-hover transition-colors text-xl">✕</button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary transition-colors text-xl"
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+              >✕</button>
             </div>
             
             {/* Scrollable Form Body */}
@@ -256,7 +266,10 @@ export default function AdminDashboard() {
 
                 {/* Parent Details section */}
                 {form.role === 'student' && (
-                   <div className="bg-brand-50/50 dark:bg-brand-900/10 p-6 rounded-2xl border border-brand-300/40 dark:border-brand-500/20 shadow-[0_4px_20px_rgba(99,102,241,0.05)] relative overflow-hidden">
+                   <div
+                     className="p-6 rounded-2xl border shadow-[0_4px_20px_rgba(99,102,241,0.05)] relative overflow-hidden"
+                     style={{ background: 'color-mix(in srgb, var(--brand-500) 4%, var(--surface-card))', borderColor: 'color-mix(in srgb, var(--brand-500) 25%, var(--surface-border))' }}
+                   >
                      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                      <h4 className="text-xs font-bold text-brand-700 uppercase tracking-widest border-b border-brand-200/60 pb-3 mb-5 flex items-center gap-2">
                        <span>👨‍👩‍👦</span> Parent / Guardian Info
@@ -270,7 +283,7 @@ export default function AdminDashboard() {
                      ].map(({ label, key, type, placeholder }) => (
                         <div key={key}>
                           <label className="text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-1.5 block opacity-90">{label}</label>
-                          <input type={type} className="input text-sm border-brand-300 dark:border-brand-700 focus:border-brand-500 shadow-sm" placeholder={placeholder}
+                          <input type={type} className="input text-sm" placeholder={placeholder}
                             value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
                             required />
                         </div>
