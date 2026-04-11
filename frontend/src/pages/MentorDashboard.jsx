@@ -146,26 +146,68 @@ export default function MentorDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex" style={{ minHeight: '100vh' }}>
       <Sidebar />
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex overflow-hidden" style={{ minHeight: '100vh' }}>
         {/* Left panel */}
-        <div className="flex-1 p-8 overflow-auto">
-          <div className="max-w-4xl animate-fade-in">
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold text-text-primary">Mentor Dashboard</h1>
-              <p className="text-text-secondary text-sm mt-1">Student risk heatmap & intervention center</p>
-            </div>
-
-            {/* Stats */}
-            {loading ? <LoadingSpinner /> : (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <StatCard icon="👥" label="My Students" value={summary?.total_students ?? 0} color="brand" />
-                <StatCard icon="✅" label="Safe" value={summary?.safe_count ?? 0} color="teal" />
-                <StatCard icon="⚠️" label="At Risk" value={summary?.at_risk_count ?? 0} color="amber" />
-                <StatCard icon="🚨" label="Critical" value={summary?.critical_count ?? 0} color="red" />
+        <div className="flex-1 overflow-auto">
+          {/* Header gradient banner */}
+          <div
+            className="px-8 py-6 border-b border-surface-border"
+            style={{
+              background: 'linear-gradient(135deg, var(--surface-card) 0%, color-mix(in srgb, var(--brand-500) 4%, var(--surface-card)) 100%)',
+            }}
+          >
+            <div className="max-w-4xl">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-text-primary tracking-tight">Mentor Dashboard</h1>
+                  <p className="text-text-secondary text-sm mt-1">Student risk heatmap &amp; intervention center</p>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span
+                    className="text-xs font-semibold px-3 py-1 rounded-full"
+                    style={{ background: 'rgba(99,102,241,0.12)', color: 'var(--brand-500)', border: '1px solid rgba(99,102,241,0.2)' }}
+                  >
+                    📅 {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </span>
+                </div>
               </div>
-            )}
+
+              {/* Inline Stats Row */}
+              {!loading && summary && (
+                <div className="flex gap-4 mt-5 flex-wrap">
+                  {[
+                    { label: 'Total Students', value: summary.total_students ?? 0, color: '#6366f1', bg: 'rgba(99,102,241,0.1)', icon: '👥' },
+                    { label: 'Safe', value: summary.safe_count ?? 0, color: '#059669', bg: 'rgba(5,150,105,0.1)', icon: '✅' },
+                    { label: 'At Risk', value: summary.at_risk_count ?? 0, color: '#d97706', bg: 'rgba(217,119,6,0.1)', icon: '⚠️' },
+                    { label: 'Critical', value: summary.critical_count ?? 0, color: '#dc2626', bg: 'rgba(220,38,38,0.1)', icon: '🚨' },
+                  ].map(s => (
+                    <div
+                      key={s.label}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl border border-surface-border flex-1 min-w-28"
+                      style={{ background: 'var(--surface-card)' }}
+                    >
+                      <div
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+                        style={{ background: s.bg }}
+                      >
+                        {s.icon}
+                      </div>
+                      <div>
+                        <p className="text-xl font-bold tabular-nums leading-none" style={{ color: s.color }}>{s.value}</p>
+                        <p className="text-xs text-text-secondary mt-0.5">{s.label}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {loading && <div className="mt-4"><LoadingSpinner /></div>}
+            </div>
+          </div>
+
+          <div className="p-8">
+          <div className="max-w-4xl animate-fade-in">
 
             {/* CSV Upload Panel */}
             <div className="card mb-6">
@@ -296,17 +338,41 @@ export default function MentorDashboard() {
                   )}
                 </div>
               )}
-            </div>
-          </div>
-        </div>
+                {/* end heatmap grid card */}
+          </div>{/* end max-w-4xl */}
+          </div>{/* end p-8 */}
+        </div>{/* end flex-1 overflow-auto */}
 
-        {/* Right detail panel */}
+        {/* Right detail panel - sticky */}
         {selected && (
-          <div className="w-96 border-l border-surface-border bg-surface-card overflow-auto p-6 animate-fade-in relative">
-            <button onClick={() => setSelected(null)} className="absolute top-4 right-4 text-text-secondary hover:text-text-primary">✕</button>
+          <div
+            className="w-96 border-l border-surface-border bg-surface-card animate-fade-in flex flex-col"
+            style={{ position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}
+          >
+            {/* Panel header strip */}
+            <div
+              className="px-6 py-4 border-b border-surface-border flex items-center justify-between shrink-0"
+              style={{ background: `linear-gradient(135deg, ${RISK_COLORS[selected.risk_level]}12, transparent)` }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm"
+                  style={{ background: RISK_COLORS[selected.risk_level] + '22', color: RISK_COLORS[selected.risk_level] }}
+                >
+                  {(selected.student_name || '?').charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-text-primary leading-tight">{selected.student_name || 'Student'}</p>
+                  <p className="text-xs text-text-secondary">{selected.roll_number}</p>
+                </div>
+              </div>
+              <button onClick={() => setSelected(null)} className="w-7 h-7 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-all text-xs">✕</button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 space-y-4">
 
             {/* 1. Score & Factors */}
-            <div className="card mb-5 mt-4" style={{ borderColor: RISK_COLORS[selected.risk_level] + '33' }}>
+            <div className="card" style={{ borderColor: RISK_COLORS[selected.risk_level] + '44' }}>
               <div className="flex items-end gap-3">
                 <span className="text-5xl font-bold tabular-nums" style={{ color: RISK_COLORS[selected.risk_level] }}>
                   {selected.risk_score?.toFixed(0) ?? '—'}
@@ -327,7 +393,7 @@ export default function MentorDashboard() {
             </div>
 
             {/* 2. Parent Info block */}
-            <div className="card mb-5 border-purple-900/30 bg-purple-900/5">
+            <div className="card border-purple-900/30 bg-purple-900/5">
               <h4 className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-3">👨‍👩‍👧 Parent / Guardian</h4>
               {selected.parent_contact ? (
                 <div>
@@ -400,8 +466,9 @@ export default function MentorDashboard() {
                     <p className="text-xs text-text-secondary mt-1">{selected.department} · Semester {selected.semester}</p>
                   </div>
                 </div>
-            </div>
-          </div>
+            </div>{/* end profile card */}
+            </div>{/* end overflow-y-auto scroll body */}
+          </div>{/* end sticky right panel */}
         )}
       </main>
     </div>
