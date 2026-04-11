@@ -143,7 +143,7 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody className="divide-y divide-surface-border">
                   {users.map(u => (
-                    <tr key={u.id} className="hover:bg-gray-50 transition-colors group cursor-pointer">
+                    <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-surface-hover transition-colors group cursor-pointer">
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-xs font-bold text-brand-600 border border-brand-100">
@@ -191,19 +191,19 @@ export default function AdminDashboard() {
       {/* Create User Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="card w-full max-w-xl animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden bg-white shadow-2xl">
+          <div className="card w-full max-w-xl animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden shadow-2xl">
             
             {/* Header - Fixed */}
-            <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-white">
+            <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-surface-card">
               <h3 className="text-xl font-bold text-text-primary">Create New User</h3>
-              <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-gray-100 transition-colors text-xl">✕</button>
+              <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-gray-100 dark:hover:bg-surface-hover transition-colors text-xl">✕</button>
             </div>
             
             {/* Scrollable Form Body */}
             <form onSubmit={handleCreateUser} className="flex-1 overflow-y-auto flex flex-col bg-surface-bg/30">
               <div className="p-6 space-y-6">
                 
-                <div className="bg-white p-5 rounded-2xl border border-surface-border shadow-sm relative overflow-hidden">
+                <div className="bg-surface-card p-5 rounded-2xl border border-surface-border shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
                   <label className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3 block">Primary Role</label>
                   <select className="input cursor-pointer font-semibold" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Base User Details */}
-                <div className="bg-white p-6 rounded-2xl border border-surface-border shadow-sm space-y-5">
+                <div className="bg-surface-card p-6 rounded-2xl border border-surface-border shadow-sm space-y-5">
                   <h4 className="text-xs font-bold text-text-primary uppercase tracking-widest border-b border-surface-border pb-3 shrink-0">
                     {form.role === 'student' ? 'Student Details' : 'User Details'}
                   </h4>
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
 
                 {/* Parent Details section */}
                 {form.role === 'student' && (
-                   <div className="bg-brand-50/50 p-6 rounded-2xl border border-brand-200 shadow-[0_4px_20px_rgba(99,102,241,0.05)] relative overflow-hidden">
+                   <div className="bg-brand-50/50 dark:bg-brand-900/10 p-6 rounded-2xl border border-brand-300/40 dark:border-brand-500/20 shadow-[0_4px_20px_rgba(99,102,241,0.05)] relative overflow-hidden">
                      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                      <h4 className="text-xs font-bold text-brand-700 uppercase tracking-widest border-b border-brand-200/60 pb-3 mb-5 flex items-center gap-2">
                        <span>👨‍👩‍👦</span> Parent / Guardian Info
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
                      ].map(({ label, key, type, placeholder }) => (
                         <div key={key}>
                           <label className="text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-1.5 block opacity-90">{label}</label>
-                          <input type={type} className="input text-sm border-brand-300 focus:border-brand-500 bg-white shadow-sm" placeholder={placeholder}
+                          <input type={type} className="input text-sm border-brand-300 dark:border-brand-700 focus:border-brand-500 shadow-sm" placeholder={placeholder}
                             value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
                             required />
                         </div>
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Footer - Fixed */}
-              <div className="p-6 border-t border-surface-border bg-white flex justify-end gap-3 shrink-0">
+              <div className="p-6 border-t border-surface-border bg-surface-card flex justify-end gap-3 shrink-0">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary px-6 font-semibold">Cancel</button>
                 <button type="submit" disabled={submitting} className="btn-primary px-8 shadow-[0_4px_14px_rgba(99,102,241,0.35)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.45)]">
                   {submitting ? 'Creating...' : '✓ Create User'}
