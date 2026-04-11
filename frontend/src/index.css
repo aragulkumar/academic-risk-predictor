@@ -7,6 +7,7 @@
      LIGHT MODE (default) — Clean crisp white
   ══════════════════════════════════════════════ */
   :root {
+    color-scheme: light;
     --brand-50:  #eef2ff;
     --brand-100: #e0e7ff;
     --brand-200: #c7d2fe;
@@ -39,6 +40,7 @@
      DARK MODE
   ══════════════════════════════════════════════ */
   [data-theme='dark'] {
+    color-scheme: dark;
     --brand-50:  #f0f4ff;
     --brand-100: #dbe4ff;
     --brand-200: #bac8ff;
@@ -166,6 +168,16 @@
   }
   .input::placeholder {
     color: var(--text-muted);
+  }
+
+  select.input option {
+    background-color: white;
+    color: var(--text-primary);
+  }
+  
+  [data-theme='dark'] select.input option {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
   }
 
   /* ── Labels ───────────── */
