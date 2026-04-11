@@ -40,21 +40,21 @@ export default function LoginPage() {
                           border border-brand-500/30 rounded-2xl mb-5 glow-brand">
             <span className="text-3xl">🎓</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-100">Academic Risk Predictor</h1>
-          <p className="text-gray-500 text-sm mt-1.5">AI-powered early warning intelligence system</p>
+          <h1 className="text-2xl font-bold text-text-primary">Academic Risk Predictor</h1>
+          <p className="text-text-secondary text-sm mt-1.5">AI-powered early warning intelligence system</p>
         </div>
 
         {/* Card */}
         <div className="card">
-          <h2 className="text-lg font-semibold text-gray-100 mb-6">Sign in to your account</h2>
+          <h2 className="text-lg font-semibold text-text-primary mb-6">Sign in to your account</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="label">Email address</label>
+              <label className="label">Username or Student Name</label>
               <input
                 id="email"
-                type="email"
+                type="text"
                 className="input"
-                placeholder="you@institution.edu"
+                placeholder="rohit or rohit@parent"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -78,7 +78,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPass(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-sm"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary text-sm"
                 >
                   {showPass ? '🙈' : '👁️'}
                 </button>
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
           <div className="divider" />
           <div className="space-y-2">
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-3">Demo Credentials</p>
+            <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Demo Credentials</p>
             {[
               { role: 'Admin', email: 'admin@demo.edu', icon: '⚙️' },
               { role: 'Mentor', email: 'mentor@demo.edu', icon: '👨‍🏫' },
@@ -113,12 +113,12 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => { setEmail(demoEmail); setPassword('demo1234') }}
                 className="w-full text-left px-3 py-2 rounded-lg bg-surface-hover hover:bg-surface-border
-                           border border-surface-border transition-colors text-sm text-gray-400
-                           hover:text-gray-200 flex items-center gap-2"
+                           border border-surface-border transition-colors text-sm text-text-secondary
+                           hover:text-text-primary flex items-center gap-2"
               >
                 <span>{icon}</span>
-                <span className="font-medium text-gray-300">{role}</span>
-                <span className="text-gray-600 text-xs ml-auto">{demoEmail}</span>
+                <span className="font-medium text-text-primary">{role}</span>
+                <span className="text-text-secondary text-xs ml-auto">{demoEmail}</span>
               </button>
             ))}
           </div>

@@ -135,7 +135,7 @@ export default function MentorDashboard() {
     const d = payload[0].payload
     return (
       <div className="bg-surface-card border border-surface-border rounded-xl p-3 text-xs shadow-xl">
-        <p className="text-gray-400">{d.date}</p>
+        <p className="text-text-secondary">{d.date}</p>
         <p className="text-lg font-bold" style={{ color: RISK_COLORS[d.level] }}>
           {d.score?.toFixed(1)} / 100
         </p>
@@ -152,8 +152,8 @@ export default function MentorDashboard() {
         <div className="flex-1 p-8 overflow-auto">
           <div className="max-w-4xl animate-fade-in">
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-gray-100">Mentor Dashboard</h1>
-              <p className="text-gray-500 text-sm mt-1">Student risk heatmap & intervention center</p>
+              <h1 className="text-2xl font-bold text-text-primary">Mentor Dashboard</h1>
+              <p className="text-text-secondary text-sm mt-1">Student risk heatmap & intervention center</p>
             </div>
 
             {/* Stats */}
@@ -169,10 +169,10 @@ export default function MentorDashboard() {
             {/* CSV Upload Panel */}
             <div className="card mb-6">
               <h2 className="section-title mb-4">📤 Bulk Upload Assessment Data</h2>
-              <p className="text-xs text-gray-500 mb-4">
+              <p className="text-xs text-text-secondary mb-4">
                 Upload a <code className="bg-surface-hover px-1 rounded text-brand-400">.csv</code> or{' '}
                 <code className="bg-surface-hover px-1 rounded text-brand-400">.xlsx</code> file with columns:{' '}
-                <span className="text-gray-400">roll_number, subject, semester, attendance_pct, internal_marks, assignment_submission_rate</span>
+                <span className="text-text-secondary">roll_number, subject, semester, attendance_pct, internal_marks, assignment_submission_rate</span>
               </p>
 
               {/* Drop Zone */}
@@ -195,14 +195,14 @@ export default function MentorDashboard() {
                 {csvFile ? (
                   <div>
                     <p className="text-2xl mb-1">📄</p>
-                    <p className="text-sm font-semibold text-gray-200">{csvFile.name}</p>
-                    <p className="text-xs text-gray-500">{(csvFile.size / 1024).toFixed(1)} KB — Click to change</p>
+                    <p className="text-sm font-semibold text-text-primary">{csvFile.name}</p>
+                    <p className="text-xs text-text-secondary">{(csvFile.size / 1024).toFixed(1)} KB — Click to change</p>
                   </div>
                 ) : (
                   <div>
                     <p className="text-3xl mb-2">☁️</p>
-                    <p className="text-sm text-gray-400">Drag & drop your CSV here, or <span className="text-brand-400 underline">browse</span></p>
-                    <p className="text-xs text-gray-600 mt-1">Supports .csv and .xlsx files</p>
+                    <p className="text-sm text-text-secondary">Drag & drop your CSV here, or <span className="text-brand-400 underline">browse</span></p>
+                    <p className="text-xs text-text-secondary mt-1">Supports .csv and .xlsx files</p>
                   </div>
                 )}
               </div>
@@ -221,7 +221,7 @@ export default function MentorDashboard() {
               {/* Upload Result Summary */}
               {uploadResult && (
                 <div className="mt-4 p-4 rounded-xl border border-surface-border bg-surface-hover">
-                  <p className="text-sm font-semibold text-gray-200 mb-3">{uploadResult.message}</p>
+                  <p className="text-sm font-semibold text-text-primary mb-3">{uploadResult.message}</p>
                   <div className="flex gap-4 mb-3">
                     <span className="text-xs px-2 py-1 rounded-full bg-teal-500/20 text-teal-400">✅ {uploadResult.saved} Saved</span>
                     <span className="text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-400">⚠️ {uploadResult.failed} Failed</span>
@@ -229,7 +229,7 @@ export default function MentorDashboard() {
                   </div>
                   {uploadResult.errors?.length > 0 && (
                     <div className="space-y-1">
-                      <p className="text-xs text-gray-500 font-medium">Failed rows:</p>
+                      <p className="text-xs text-text-secondary font-medium">Failed rows:</p>
                       {uploadResult.errors.map((e, i) => (
                         <p key={i} className="text-xs text-red-400 font-mono">
                           Row {e.row} · {e.roll_number ?? '?'} → {e.error}
@@ -268,26 +268,26 @@ export default function MentorDashboard() {
                           style={{ background: RISK_COLORS[s.risk_level] ?? '#374151' }} />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-sm font-semibold text-gray-300">{s.roll_number}</span>
-                            <span className="text-gray-600 text-xs">·</span>
-                            <span className="text-gray-500 text-xs">{s.department} · Sem {s.semester}</span>
+                            <span className="font-mono text-sm font-semibold text-text-primary">{s.roll_number}</span>
+                            <span className="text-text-secondary text-xs">·</span>
+                            <span className="text-text-secondary text-xs">{s.department} · Sem {s.semester}</span>
                             <RiskBadge level={s.risk_level} />
                           </div>
                           {s.top_factors && (
-                            <p className="text-xs text-gray-500 truncate">{s.top_factors}</p>
+                            <p className="text-xs text-text-secondary truncate">{s.top_factors}</p>
                           )}
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-2xl font-bold tabular-nums" style={{ color: RISK_COLORS[s.risk_level] ?? '#6b7280' }}>
                             {s.risk_score?.toFixed(0) ?? '—'}
                           </p>
-                          <p className="text-xs text-gray-600">/ 100</p>
+                          <p className="text-xs text-text-secondary">/ 100</p>
                         </div>
                       </div>
                     </button>
                   ))}
                   {filtered.length === 0 && (
-                    <p className="text-center text-gray-600 py-8">No students match search</p>
+                    <p className="text-center text-text-secondary py-8">No students match search</p>
                   )}
                 </div>
               )}
@@ -297,80 +297,54 @@ export default function MentorDashboard() {
 
         {/* Right detail panel */}
         {selected && (
-          <div className="w-96 border-l border-surface-border bg-surface-card overflow-auto p-6 animate-fade-in">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="font-bold text-gray-100">{selected.roll_number}</h3>
-                <p className="text-xs text-gray-500">{selected.department} · Semester {selected.semester}</p>
-              </div>
-              <button onClick={() => setSelected(null)} className="text-gray-500 hover:text-gray-300">✕</button>
-            </div>
+          <div className="w-96 border-l border-surface-border bg-surface-card overflow-auto p-6 animate-fade-in relative">
+            <button onClick={() => setSelected(null)} className="absolute top-4 right-4 text-text-secondary hover:text-text-primary">✕</button>
 
-            {/* Score */}
-            <div className="card mb-5" style={{ borderColor: RISK_COLORS[selected.risk_level] + '33' }}>
+            {/* 1. Score & Factors */}
+            <div className="card mb-5 mt-4" style={{ borderColor: RISK_COLORS[selected.risk_level] + '33' }}>
               <div className="flex items-end gap-3">
                 <span className="text-5xl font-bold tabular-nums" style={{ color: RISK_COLORS[selected.risk_level] }}>
                   {selected.risk_score?.toFixed(0) ?? '—'}
                 </span>
                 <div className="pb-1">
-                  <p className="text-xs text-gray-500">Risk Score</p>
+                  <p className="text-xs text-text-secondary">Risk Score</p>
                   <RiskBadge level={selected.risk_level} />
                 </div>
               </div>
               {selected.top_factors && (
                 <div className="mt-4 pt-4 border-t border-surface-border">
-                  <p className="text-xs text-gray-500 font-medium mb-2">🔍 Key Factors</p>
-                  {selected.top_factors.split(' | ').map((f, i) => (
-                    <p key={i} className="text-xs text-gray-400 py-1 border-b border-surface-border/50 last:border-0">{f}</p>
+                  <p className="text-xs text-text-secondary font-medium mb-2">🔍 Key Factors</p>
+                  {selected.top_factors.split('\n').filter(Boolean).map((f, i) => (
+                    <p key={i} className="text-xs text-text-primary py-1 border-b border-surface-border/50 last:border-0">{f}</p>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Parent Info block */}
+            {/* 2. Parent Info block */}
             <div className="card mb-5 border-purple-900/30 bg-purple-900/5">
-              <h4 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-3">👨‍👩‍👧 Parent / Guardian</h4>
+              <h4 className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-3">👨‍👩‍👧 Parent / Guardian</h4>
               {selected.parent_contact ? (
                 <div>
-                  <p className="text-sm font-bold text-gray-200">{selected.parent_contact.name}</p>
-                  <p className="text-xs text-gray-400 mt-1">📞 {selected.parent_contact.phone}</p>
-                  <p className="text-xs text-gray-400">✉️ {selected.parent_contact.email}</p>
+                  <p className="text-sm font-bold text-text-primary">{selected.parent_contact.name}</p>
+                  <p className="text-xs text-text-secondary mt-1">📞 {selected.parent_contact.phone}</p>
+                  <p className="text-xs text-text-secondary">✉️ {selected.parent_contact.email}</p>
                   
                   <button 
                     onClick={handleNotifyParent}
-                    className="w-full mt-4 py-2 px-3 rounded-lg text-sm font-semibold text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition-colors"
+                    className="w-full mt-4 py-2 px-3 rounded-lg text-sm font-semibold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition-colors"
                   >
                     🚨 Notify Parent of Risk/Failure
                   </button>
                 </div>
               ) : (
-                <p className="text-xs text-gray-500 italic">No parent linked to this student.</p>
+                <p className="text-xs text-text-secondary italic">No parent linked to this student.</p>
               )}
             </div>
 
-            {/* Trajectory chart */}
-            {history.length > 1 && (
-              <div className="mb-5">
-                <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Risk Trajectory</p>
-                <div className="h-40">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={history}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#21262d" />
-                      <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#6b7280' }} />
-                      <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: '#6b7280' }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <ReferenceLine y={70} stroke="#ef444466" strokeDasharray="4 4" label={{ value: 'Alert', fill: '#ef4444', fontSize: 10 }} />
-                      <Line type="monotone" dataKey="score" stroke="#5c7cfa" strokeWidth={2}
-                        dot={{ r: 3, fill: '#5c7cfa' }} activeDot={{ r: 5 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            )}
-
-            {/* Intervention panel */}
+            {/* 3. Log Intervention */}
             <div className="mb-5">
-              <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Log Intervention</p>
+              <p className="text-xs font-semibold text-text-secondary mb-3 uppercase tracking-wide">Log Intervention</p>
               <div className="space-y-3">
                 <select className="input text-sm" value={actionType} onChange={e => setActionType(e.target.value)}>
                   {Object.entries(ACTION_LABELS).map(([k, v]) => (
@@ -389,25 +363,39 @@ export default function MentorDashboard() {
 
             {/* Intervention History */}
             {interventions.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Intervention History</p>
+              <div className="mb-5">
+                <p className="text-xs font-semibold text-text-secondary mb-3 uppercase tracking-wide">Intervention History</p>
                 <div className="space-y-2">
                   {interventions.map(iv => (
                     <div key={iv.id} className="px-3 py-2.5 rounded-xl bg-surface-hover border border-surface-border">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-gray-300">
+                        <span className="text-xs font-semibold text-text-primary">
                           {ACTION_LABELS[iv.action_type] ?? iv.action_type}
                         </span>
-                        <span className="text-xs text-gray-600">
+                        <span className="text-xs text-text-secondary">
                           {new Date(iv.created_at).toLocaleDateString()}
                         </span>
                       </div>
-                      {iv.notes && <p className="text-xs text-gray-500">{iv.notes}</p>}
+                      {iv.notes && <p className="text-xs text-text-secondary">{iv.notes}</p>}
                     </div>
                   ))}
                 </div>
               </div>
             )}
+
+            {/* 4. Student Profile Card */}
+            <div className="card mt-auto bg-surface-hover/50 border-surface-border">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-brand-500/20 text-brand-500 flex items-center justify-center font-bold text-xl border border-brand-500/50">
+                    {selected.student_name ? selected.student_name.charAt(0).toUpperCase() : '?'}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-text-primary">{selected.student_name || 'Student'}</h3>
+                    <p className="text-sm font-mono text-text-secondary font-semibold">{selected.roll_number}</p>
+                    <p className="text-xs text-text-secondary mt-1">{selected.department} · Semester {selected.semester}</p>
+                  </div>
+                </div>
+            </div>
           </div>
         )}
       </main>
