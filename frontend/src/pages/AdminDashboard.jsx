@@ -143,7 +143,7 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody className="divide-y divide-surface-border">
                   {users.map(u => (
-                    <tr key={u.id} className="hover:bg-surface-hover transition-colors">
+                    <tr key={u.id} className="hover:bg-gray-50 transition-colors group cursor-pointer">
                       <td className="py-3 px-2">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-xs font-bold text-brand-600 border border-brand-100">
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
             {/* Header - Fixed */}
             <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-white">
               <h3 className="text-xl font-bold text-text-primary">Create New User</h3>
-              <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors text-xl">✕</button>
+              <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-gray-100 transition-colors text-xl">✕</button>
             </div>
             
             {/* Scrollable Form Body */}
