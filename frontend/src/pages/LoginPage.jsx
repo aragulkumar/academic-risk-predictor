@@ -104,14 +104,15 @@ export default function LoginPage() {
           <div className="space-y-2">
             <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Demo Credentials</p>
             {[
-              { role: 'Admin', email: 'admin@demo.edu', icon: '⚙️' },
-              { role: 'Mentor', email: 'mentor@demo.edu', icon: '👨‍🏫' },
-              { role: 'Student', email: 'student@demo.edu', icon: '🎒' },
-            ].map(({ role, email: demoEmail, icon }) => (
+              { role: 'Admin', email: 'admin@college.edu', pass: 'admin123', icon: '⚙️' },
+              { role: 'Mentor', email: 'mentor@college.edu', pass: 'mentor123', icon: '👨‍🏫' },
+              { role: 'Student', email: 'aarav', pass: 'password123', icon: '🎒' },
+              { role: 'Parent', email: 'aarav@parent', pass: 'password123', icon: '👨‍👩‍👦' },
+            ].map(({ role, email: demoEmail, pass, icon }) => (
               <button
                 key={role}
                 type="button"
-                onClick={() => { setEmail(demoEmail); setPassword('demo1234') }}
+                onClick={() => { setEmail(demoEmail); setPassword(pass) }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-border)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)' }}
                 className="w-full text-left px-3 py-2 rounded-lg border border-surface-border
