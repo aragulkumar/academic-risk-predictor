@@ -191,79 +191,86 @@ export default function AdminDashboard() {
       {/* Create User Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="card w-full max-w-md animate-slide-up">
-            <div className="flex items-center justify-between mb-6">
+          <div className="card w-full max-w-md animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden">
+            
+            {/* Header - Fixed */}
+            <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-surface-card">
               <h3 className="text-lg font-semibold text-text-primary">Create New User</h3>
               <button onClick={() => setShowModal(false)} className="text-text-secondary hover:text-text-primary text-xl">✕</button>
             </div>
-            <form onSubmit={handleCreateUser} className="space-y-4">
-              <div>
-                <label className="label">Role</label>
-                <select className="input" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                  <option value="student">Student & Parent Pair</option>
-                  <option value="mentor">Mentor</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
+            
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleCreateUser} className="flex-1 overflow-y-auto flex flex-col">
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="label">Role</label>
+                  <select className="input" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+                    <option value="student">Student & Parent Pair</option>
+                    <option value="mentor">Mentor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
 
-              {/* Base User Details */}
-              <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2">
-                <div className="col-span-2"><h4 className="text-sm font-bold text-text-primary">{form.role === 'student' ? 'Student Details' : 'User Details'}</h4></div>
-                {[
-                  { label: 'Full Name', key: 'name', type: 'text', placeholder: 'Name' },
-                  { label: 'Email', key: 'email', type: 'email', placeholder: 'email@...' },
-                  { label: 'Password', key: 'password', type: 'password', placeholder: '••••••••' },
-                  { label: 'Phone', key: 'phone', type: 'tel', placeholder: '+91...' },
-                ].map(({ label, key, type, placeholder }) => (
-                   <div key={key}>
-                     <label className="label">{label}</label>
-                     <input type={type} className="input text-sm" placeholder={placeholder}
-                       value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                       required={key !== 'phone'} />
-                   </div>
-                ))}
-              </div>
-
-              {/* Additional Student Details */}
-              {form.role === 'student' && (
-                <div className="grid grid-cols-2 gap-4">
+                {/* Base User Details */}
+                <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2">
+                  <div className="col-span-2"><h4 className="text-sm font-bold text-text-primary">{form.role === 'student' ? 'Student Details' : 'User Details'}</h4></div>
                   {[
-                    { label: 'Roll Number', key: 'roll_number', type: 'text', placeholder: 'CS001' },
-                    { label: 'Department', key: 'department', type: 'text', placeholder: 'IT' },
-                    { label: 'Semester', key: 'semester', type: 'number', placeholder: '1' },
-                    { label: 'Batch Year', key: 'batch_year', type: 'number', placeholder: '2024' },
+                    { label: 'Full Name', key: 'name', type: 'text', placeholder: 'Name' },
+                    { label: 'Email', key: 'email', type: 'email', placeholder: 'email@...' },
+                    { label: 'Password', key: 'password', type: 'password', placeholder: '••••••••' },
+                    { label: 'Phone', key: 'phone', type: 'tel', placeholder: '+91...' },
                   ].map(({ label, key, type, placeholder }) => (
                      <div key={key}>
                        <label className="label">{label}</label>
                        <input type={type} className="input text-sm" placeholder={placeholder}
-                         value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: type === 'number' ? +e.target.value : e.target.value }))}
-                         required />
+                         value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                         required={key !== 'phone'} />
                      </div>
                   ))}
                 </div>
-              )}
 
-              {/* Parent Details section */}
-              {form.role === 'student' && (
-                 <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2 bg-brand-500/5 p-3 rounded-lg border border-brand-500/20">
-                   <div className="col-span-2"><h4 className="text-sm font-bold text-brand-600">Parent / Guardian Info</h4></div>
-                   {[
-                     { label: "Parent's Name", key: 'parent_name', type: 'text', placeholder: 'Name' },
-                     { label: "Parent's Email", key: 'parent_email', type: 'email', placeholder: 'email@...' },
-                     { label: "Parent's Phone", key: 'parent_phone', type: 'tel', placeholder: '+91...' },
-                     { label: "Parent's Password", key: 'parent_password', type: 'password', placeholder: '••••••••' },
-                   ].map(({ label, key, type, placeholder }) => (
-                      <div key={key}>
-                        <label className="label text-brand-600 opacity-90">{label}</label>
-                        <input type={type} className="input text-sm border-brand-500/30 focus:border-brand-500" placeholder={placeholder}
-                          value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                          required />
-                      </div>
-                   ))}
-                 </div>
-              )}
+                {/* Additional Student Details */}
+                {form.role === 'student' && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { label: 'Roll Number', key: 'roll_number', type: 'text', placeholder: 'CS001' },
+                      { label: 'Department', key: 'department', type: 'text', placeholder: 'IT' },
+                      { label: 'Semester', key: 'semester', type: 'number', placeholder: '1' },
+                      { label: 'Batch Year', key: 'batch_year', type: 'number', placeholder: '2024' },
+                    ].map(({ label, key, type, placeholder }) => (
+                       <div key={key}>
+                         <label className="label">{label}</label>
+                         <input type={type} className="input text-sm" placeholder={placeholder}
+                           value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: type === 'number' ? +e.target.value : e.target.value }))}
+                           required />
+                       </div>
+                    ))}
+                  </div>
+                )}
 
-              <div className="flex gap-3 pt-4">
+                {/* Parent Details section */}
+                {form.role === 'student' && (
+                   <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2 bg-brand-500/5 p-3 rounded-lg border border-brand-500/20">
+                     <div className="col-span-2"><h4 className="text-sm font-bold text-brand-600">Parent / Guardian Info</h4></div>
+                     {[
+                       { label: "Parent's Name", key: 'parent_name', type: 'text', placeholder: 'Name' },
+                       { label: "Parent's Email", key: 'parent_email', type: 'email', placeholder: 'email@...' },
+                       { label: "Parent's Phone", key: 'parent_phone', type: 'tel', placeholder: '+91...' },
+                       { label: "Parent's Password", key: 'parent_password', type: 'password', placeholder: '••••••••' },
+                     ].map(({ label, key, type, placeholder }) => (
+                        <div key={key}>
+                          <label className="label text-brand-600 opacity-90">{label}</label>
+                          <input type={type} className="input text-sm border-brand-500/30 focus:border-brand-500 bg-surface-card" placeholder={placeholder}
+                            value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                            required />
+                        </div>
+                     ))}
+                   </div>
+                )}
+              </div>
+
+              {/* Footer - Fixed */}
+              <div className="p-6 border-t border-surface-border bg-surface-hover/50 flex gap-3 shrink-0">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">Cancel</button>
                 <button type="submit" disabled={submitting} className="btn-primary flex-1">
                   {submitting ? 'Creating...' : 'Create User'}
