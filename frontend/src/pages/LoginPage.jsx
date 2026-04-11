@@ -112,9 +112,11 @@ export default function LoginPage() {
                 key={role}
                 type="button"
                 onClick={() => { setEmail(demoEmail); setPassword('demo1234') }}
-                className="w-full text-left px-3 py-2 rounded-lg bg-surface-hover hover:bg-surface-border
-                           border border-surface-border transition-colors text-sm text-text-secondary
-                           hover:text-text-primary flex items-center gap-2"
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-border)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)' }}
+                className="w-full text-left px-3 py-2 rounded-lg border border-surface-border
+                           transition-colors text-sm flex items-center gap-2"
+                style={{ background: 'var(--surface-hover)' }}
               >
                 <span>{icon}</span>
                 <span className="font-medium text-text-primary">{role}</span>

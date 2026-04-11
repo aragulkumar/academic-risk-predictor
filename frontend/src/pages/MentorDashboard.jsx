@@ -307,6 +307,14 @@ export default function MentorDashboard() {
                       <button
                         key={s.student_id}
                         onClick={() => openStudent(s)}
+                        onMouseEnter={e => {
+                          if (selected?.student_id !== s.student_id)
+                            e.currentTarget.style.background = 'var(--surface-hover)'
+                        }}
+                        onMouseLeave={e => {
+                          if (selected?.student_id !== s.student_id)
+                            e.currentTarget.style.background = 'var(--surface-card)'
+                        }}
                         className={`w-full text-left px-4 py-3.5 rounded-xl border transition-all duration-150 ${
                           selected?.student_id === s.student_id
                             ? 'border-brand-500/40'
