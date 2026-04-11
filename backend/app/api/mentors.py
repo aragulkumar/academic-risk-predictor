@@ -11,6 +11,7 @@ from app.core.security import require_role
 from app.models.intervention import Intervention
 from app.models.risk_score import RiskScore
 from app.models.student import Student
+from app.models.user import User
 from app.schemas.risk import InterventionCreate, InterventionOut
 
 router = APIRouter(prefix="/api/mentors", tags=["mentors"])
