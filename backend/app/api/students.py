@@ -128,3 +128,35 @@ async def get_risk_scores(
         select(RiskScore).where(RiskScore.student_id == student_id).order_by(RiskScore.computed_at.desc())
     )
     return result.scalars().all()
+
+
+@router.get("/{student_id}/semester-results")
+async def get_student_semester_results(
+    student_id: int,
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(get_current_user),
+):
+    from app.models.semester_result import SemesterResult
+    result = await db.execute(
+        select(SemesterResult)
+        .where(SemesterResult.student_id == student_id)
+        .order_by(SemesterResult.semester.desc())
+    )
+    results = result.scalars().all()
+    
+    return [
+        {
+            "id": r.id,
+            "semester": r.semester,
+            "academic_year": r.academic_year,
+            "gpa": r.gpa,
+            "total_marks": r.total_marks,
+            "max_marks": r.max_marks,
+            "passed": r.passed,
+            "arrears": r.arrears,
+            "status": "PASSED ✅" if r.passed else f"FAILED ❌ ({r.arrears} arrears)",
+            "remarks": r.remarks,
+            "recorded_at": r.recorded_at.isoformat(),
+        }
+        for r in results
+    ]

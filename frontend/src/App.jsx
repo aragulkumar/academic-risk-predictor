@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import AdminDashboard from './pages/AdminDashboard'
 import MentorDashboard from './pages/MentorDashboard'
 import StudentDashboard from './pages/StudentDashboard'
+import ParentDashboard from './pages/ParentDashboard'
 import LoadingSpinner from './components/LoadingSpinner'
 
 function ProtectedRoute({ children, roles }) {
@@ -22,6 +23,7 @@ export default function App() {
   const roleHome = user
     ? user.role === 'admin' ? '/admin'
     : user.role === 'mentor' ? '/mentor'
+    : user.role === 'parent' ? '/parent'
     : '/student'
     : '/login'
 
@@ -44,6 +46,12 @@ export default function App() {
       <Route path="/student" element={
         <ProtectedRoute roles={['student']}>
           <StudentDashboard />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/parent" element={
+        <ProtectedRoute roles={['parent']}>
+          <ParentDashboard />
         </ProtectedRoute>
       } />
 

@@ -30,6 +30,10 @@ export default function MentorDashboard() {
   const [notes, setNotes] = useState('')
   const [logLoading, setLogLoading] = useState(false)
   const [search, setSearch] = useState('')
+  const [csvFile, setCsvFile] = useState(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadResult, setUploadResult] = useState(null)
+  const [dragOver, setDragOver] = useState(false)
 
   useEffect(() => { fetchData() }, [])
 
@@ -79,10 +83,52 @@ export default function MentorDashboard() {
     finally { setLogLoading(false) }
   }
 
+  const handleNotifyParent = async () => {
+    if (!selected) return
+    const reason = prompt("Enter reason for notifying parent (e.g., Failed internal exams, Continuous low attendance):")
+    if (!reason) return
+
+    try {
+      const res = await api.post('/api/mentors/notify-parent', {
+        student_id: selected.student_id,
+        reason: reason
+      })
+      if (res.data.success) {
+        toast.success(res.data.message)
+      } else {
+        toast.error(res.data.message)
+      }
+      openStudent(selected) // Refresh intervention history
+    } catch (err) {
+      toast.error('Failed to send notification')
+    }
+  }
+
   const filtered = heatmap.filter(s =>
     s.roll_number.toLowerCase().includes(search.toLowerCase()) ||
     s.department.toLowerCase().includes(search.toLowerCase())
   )
+
+  const handleCsvUpload = async () => {
+    if (!csvFile) return
+    setUploading(true)
+    setUploadResult(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', csvFile)
+      const res = await api.post('/api/upload/assessments', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      setUploadResult(res.data)
+      toast.success(`${res.data.saved} assessments uploaded successfully!`)
+      setCsvFile(null)
+      fetchData() // refresh dashboard
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.[0]) return null
@@ -119,6 +165,81 @@ export default function MentorDashboard() {
                 <StatCard icon="🚨" label="Critical" value={summary?.critical_count ?? 0} color="red" />
               </div>
             )}
+
+            {/* CSV Upload Panel */}
+            <div className="card mb-6">
+              <h2 className="section-title mb-4">📤 Bulk Upload Assessment Data</h2>
+              <p className="text-xs text-gray-500 mb-4">
+                Upload a <code className="bg-surface-hover px-1 rounded text-brand-400">.csv</code> or{' '}
+                <code className="bg-surface-hover px-1 rounded text-brand-400">.xlsx</code> file with columns:{' '}
+                <span className="text-gray-400">roll_number, subject, semester, attendance_pct, internal_marks, assignment_submission_rate</span>
+              </p>
+
+              {/* Drop Zone */}
+              <div
+                onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={e => { e.preventDefault(); setDragOver(false); setCsvFile(e.dataTransfer.files[0]); setUploadResult(null) }}
+                className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer ${
+                  dragOver ? 'border-brand-500 bg-brand-600/10' : 'border-surface-border hover:border-brand-700'
+                }`}
+                onClick={() => document.getElementById('csv-file-input').click()}
+              >
+                <input
+                  id="csv-file-input"
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
+                  className="hidden"
+                  onChange={e => { setCsvFile(e.target.files[0]); setUploadResult(null) }}
+                />
+                {csvFile ? (
+                  <div>
+                    <p className="text-2xl mb-1">📄</p>
+                    <p className="text-sm font-semibold text-gray-200">{csvFile.name}</p>
+                    <p className="text-xs text-gray-500">{(csvFile.size / 1024).toFixed(1)} KB — Click to change</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-3xl mb-2">☁️</p>
+                    <p className="text-sm text-gray-400">Drag & drop your CSV here, or <span className="text-brand-400 underline">browse</span></p>
+                    <p className="text-xs text-gray-600 mt-1">Supports .csv and .xlsx files</p>
+                  </div>
+                )}
+              </div>
+
+              {csvFile && (
+                <button
+                  id="upload-csv-btn"
+                  onClick={handleCsvUpload}
+                  disabled={uploading}
+                  className="btn-primary w-full mt-4 text-sm"
+                >
+                  {uploading ? '⏳ Uploading & Running ML...' : '🚀 Upload & Predict Risk for All Students'}
+                </button>
+              )}
+
+              {/* Upload Result Summary */}
+              {uploadResult && (
+                <div className="mt-4 p-4 rounded-xl border border-surface-border bg-surface-hover">
+                  <p className="text-sm font-semibold text-gray-200 mb-3">{uploadResult.message}</p>
+                  <div className="flex gap-4 mb-3">
+                    <span className="text-xs px-2 py-1 rounded-full bg-teal-500/20 text-teal-400">✅ {uploadResult.saved} Saved</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-400">⚠️ {uploadResult.failed} Failed</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-brand-600/20 text-brand-400">🤖 {uploadResult.risk_prediction}</span>
+                  </div>
+                  {uploadResult.errors?.length > 0 && (
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-500 font-medium">Failed rows:</p>
+                      {uploadResult.errors.map((e, i) => (
+                        <p key={i} className="text-xs text-red-400 font-mono">
+                          Row {e.row} · {e.roll_number ?? '?'} → {e.error}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Search */}
             <div className="mb-4">
@@ -203,6 +324,27 @@ export default function MentorDashboard() {
                     <p key={i} className="text-xs text-gray-400 py-1 border-b border-surface-border/50 last:border-0">{f}</p>
                   ))}
                 </div>
+              )}
+            </div>
+
+            {/* Parent Info block */}
+            <div className="card mb-5 border-purple-900/30 bg-purple-900/5">
+              <h4 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-3">👨‍👩‍👧 Parent / Guardian</h4>
+              {selected.parent_contact ? (
+                <div>
+                  <p className="text-sm font-bold text-gray-200">{selected.parent_contact.name}</p>
+                  <p className="text-xs text-gray-400 mt-1">📞 {selected.parent_contact.phone}</p>
+                  <p className="text-xs text-gray-400">✉️ {selected.parent_contact.email}</p>
+                  
+                  <button 
+                    onClick={handleNotifyParent}
+                    className="w-full mt-4 py-2 px-3 rounded-lg text-sm font-semibold text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition-colors"
+                  >
+                    🚨 Notify Parent of Risk/Failure
+                  </button>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500 italic">No parent linked to this student.</p>
               )}
             </div>
 

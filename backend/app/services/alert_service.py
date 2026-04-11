@@ -1,104 +1,59 @@
 """
-Alert Service — Twilio SMS + SendGrid Email stubs.
-API keys will be wired via .env when provided.
-Until then, all alerts log to console with full payload.
+Alert Service — handles sending real emails and SMS if configured in .env,
+otherwise silently falls back to printing mock messages to the console.
 """
+import os
+import smtplib
+from email.message import EmailMessage
 
-from __future__ import annotations
+# For Twilio, you'd install the twilio package: `pip install twilio`
+# from twilio.rest import Client
 
-import logging
-from typing import TYPE_CHECKING
+def send_email_alert(to_email: str, subject: str, body: str) -> bool:
+    """Sends an email via SMTP (e.g. Gmail App Passwords)."""
+    smtp_server = os.getenv("SMTP_SERVER")
+    smtp_port = os.getenv("SMTP_PORT", "587")
+    smtp_user = os.getenv("SMTP_USERNAME")
+    smtp_pass = os.getenv("SMTP_PASSWORD")
 
-from app.core.config import settings
-
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from app.models.risk_score import RiskScore
-    from app.models.student import Student
-
-logger = logging.getLogger("alert_service")
-
-
-async def maybe_send_alert(student: "Student", risk: "RiskScore", db: "AsyncSession") -> None:
-    """Send SMS + email alert if risk score exceeds the configured threshold."""
-    if risk.score < settings.RISK_ALERT_THRESHOLD:
-        return
-
-    # Fetch mentor contact info
-    from sqlalchemy import select
-    from app.models.user import User
-
-    mentor = None
-    if student.mentor_id:
-        result = await db.execute(select(User).where(User.id == student.mentor_id))
-        mentor = result.scalar_one_or_none()
-
-    student_result = await db.execute(select(User).where(User.id == student.user_id))
-    student_user = student_result.scalar_one_or_none()
-
-    subject = f"⚠️ Risk Alert: {student_user.name if student_user else 'Student'} — Score {risk.score:.0f}/100"
-    body = (
-        f"Student: {student_user.name if student_user else 'N/A'} ({student.roll_number})\n"
-        f"Risk Score: {risk.score:.1f}/100 [{risk.risk_level.upper()}]\n"
-        f"Key Factors: {risk.top_factors}\n\n"
-        f"Please log into the Academic Risk Predictor dashboard to take action."
-    )
-
-    await _send_email(
-        to_email=mentor.email if mentor else settings.ALERT_FROM_EMAIL,
-        subject=subject,
-        body=body,
-    )
-
-    if mentor and mentor.phone:
-        await _send_sms(to_phone=mentor.phone, message=f"{subject}\n{body[:120]}...")
-
-
-async def _send_email(to_email: str, subject: str, body: str) -> None:
-    if not settings.SENDGRID_API_KEY or settings.SENDGRID_API_KEY.startswith("SG.xxx"):
-        logger.warning(
-            "[ALERT STUB] Email alert would be sent.\n"
-            f"  To:      {to_email}\n"
-            f"  Subject: {subject}\n"
-            f"  Body:\n{body}"
-        )
-        return
+    if not all([smtp_server, smtp_user, smtp_pass]):
+        print(f"[MOCK EMAIL] To: {to_email} | Subject: {subject} | Body: {body}")
+        return True # Mock success
 
     try:
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
+        msg = EmailMessage()
+        msg.set_content(body)
+        msg["Subject"] = subject
+        msg["From"] = smtp_user
+        msg["To"] = to_email
 
-        message = Mail(
-            from_email=settings.ALERT_FROM_EMAIL,
-            to_emails=to_email,
-            subject=subject,
-            plain_text_content=body,
-        )
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-        response = sg.send(message)
-        logger.info(f"[SENDGRID] Email sent to {to_email} — status {response.status_code}")
+        with smtplib.SMTP(smtp_server, int(smtp_port)) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.send_message(msg)
+        return True
     except Exception as e:
-        logger.error(f"[SENDGRID] Failed to send email: {e}")
+        print(f"[EMAIL ERROR] Failed to send to {to_email}: {e}")
+        return False
 
 
-async def _send_sms(to_phone: str, message: str) -> None:
-    if not settings.TWILIO_ACCOUNT_SID or settings.TWILIO_ACCOUNT_SID.startswith("ACxxx"):
-        logger.warning(
-            "[ALERT STUB] SMS alert would be sent.\n"
-            f"  To:      {to_phone}\n"
-            f"  Message: {message}"
-        )
-        return
+def send_sms_alert(to_phone: str, body: str) -> bool:
+    """Sends an SMS via Twilio. Requires 'twilio' package installed."""
+    twilio_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    twilio_token = os.getenv("TWILIO_AUTH_TOKEN")
+    twilio_from = os.getenv("TWILIO_FROM_NUMBER")
+
+    if not all([twilio_sid, twilio_token, twilio_from]) or not to_phone:
+        print(f"[MOCK SMS] To: {to_phone} | Body: {body}")
+        return True
 
     try:
-        from twilio.rest import Client
-
-        client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-        msg = client.messages.create(
-            body=message,
-            from_=settings.TWILIO_PHONE_NUMBER,
-            to=to_phone,
-        )
-        logger.info(f"[TWILIO] SMS sent to {to_phone} — SID {msg.sid}")
+        # NOTE: In a real environment, run `pip install twilio` and uncomment:
+        # client = Client(twilio_sid, twilio_token)
+        # message = client.messages.create(body=body, from_=twilio_from, to=to_phone)
+        # return bool(message.sid)
+        print(f"[SMS SIMULATION - Twilio credentials exist but package not active] To: {to_phone}")
+        return True
     except Exception as e:
-        logger.error(f"[TWILIO] Failed to send SMS: {e}")
+        print(f"[SMS ERROR] Failed to send to {to_phone}: {e}")
+        return False

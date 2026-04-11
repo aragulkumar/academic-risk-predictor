@@ -43,6 +43,8 @@ export default function StudentDashboard() {
   const [scores, setScores] = useState([])
   const [student, setStudent] = useState(null)
   const [assessment, setAssessment] = useState(null)
+  const [attendance, setAttendance] = useState([])
+  const [semResults, setSemResults] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -60,16 +62,25 @@ export default function StudentDashboard() {
           date: new Date(r.computed_at).toLocaleDateString(),
         })))
 
-        // Fetch latest assessment data (read-only)
+        // Fetch latest assessment data
         try {
           const asmRes = await api.get(`/api/students/${res.data.id}/assessments`)
           if (asmRes.data?.length > 0) {
-            // Use the most recent assessment
             setAssessment(asmRes.data[0])
           }
-        } catch {
-          // assessments endpoint may not exist yet, ignore
-        }
+        } catch { /* ignore */ }
+
+        // Fetch daily attendance
+        try {
+          const attRes = await api.get(`/api/attendance/student/${res.data.id}`)
+          setAttendance(attRes.data)
+        } catch { /* ignore */ }
+
+        // Fetch semester results
+        try {
+          const semRes = await api.get(`/api/students/${res.data.id}/semester-results`)
+          setSemResults(semRes.data)
+        } catch { /* ignore */ }
       } catch {
         // Demo fallback when no backend connection
         setScores([
@@ -246,6 +257,55 @@ export default function StudentDashboard() {
                       </p>
                     </div>
                   </div>
+                </div>
+
+              </div>
+              
+              {/* Third column / bottom row for logs */}
+              <div className="lg:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                
+                {/* Daily Attendance Log */}
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-gray-400 border-b border-surface-border pb-3 mb-3">📅 Daily Attendance Log</h3>
+                  {attendance.length === 0 ? (
+                    <p className="text-xs text-gray-600 py-4 text-center">No attendance records found.</p>
+                  ) : (
+                    <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2">
+                      {attendance.map(a => (
+                        <div key={a.id} className="flex justify-between items-center p-2 rounded bg-surface-hover/50 text-sm border border-surface-border">
+                          <div>
+                            <span className="font-medium text-gray-300">{new Date(a.date).toLocaleDateString()}</span>
+                            <span className="text-xs text-gray-500 ml-2">{a.subject}</span>
+                          </div>
+                          <span className={a.is_present ? 'text-teal-400 font-semibold' : 'text-red-400 font-semibold'}>
+                            {a.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Semester Results Log */}
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-gray-400 border-b border-surface-border pb-3 mb-3">🎓 Semester Results</h3>
+                  {semResults.length === 0 ? (
+                    <p className="text-xs text-gray-600 py-4 text-center">No semester results available.</p>
+                  ) : (
+                    <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2">
+                      {semResults.map(r => (
+                        <div key={r.id} className="p-3 rounded bg-surface-hover/30 text-sm border border-surface-border flex justify-between items-center">
+                          <div>
+                            <p className="font-medium text-brand-300">Semester {r.semester} <span className="text-gray-500 text-xs ml-1">({r.academic_year})</span></p>
+                            <p className="text-xs text-gray-400 mt-1">GPA: {r.gpa?.toFixed(2) ?? '-'} | Arrears: {r.arrears}</p>
+                          </div>
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${r.passed ? 'bg-teal-500/10 text-teal-400' : 'bg-red-500/10 text-red-400'}`}>
+                            {r.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
               </div>

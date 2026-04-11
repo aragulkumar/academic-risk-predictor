@@ -3,6 +3,7 @@ Admin API routes — user management, institution data, role assignment.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -100,3 +101,74 @@ async def institution_stats(
         "risk_scores_computed": total_scores,
         "average_risk_score": round(float(avg_score or 0), 1),
     }
+
+class EnrollmentIn(BaseModel):
+    # Student details
+    student_name: str
+    student_email: str
+    student_password: str
+    roll_number: str
+    department: str
+    semester: int
+    batch_year: int
+    # Parent details
+    parent_name: str
+    parent_email: str
+    parent_phone: str
+    parent_password: str
+
+@router.post("/enroll-student", status_code=201)
+async def enroll_student(
+    payload: EnrollmentIn,
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(require_role("admin")),
+):
+    from app.models.student import Student
+    from app.models.parent_student import ParentStudent
+
+    # 1. Create Student User
+    existing_stu = await db.execute(select(User).where(User.email == payload.student_email))
+    if existing_stu.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Student email already exists")
+
+    stu_user = User(
+        name=payload.student_name,
+        email=payload.student_email,
+        hashed_password=hash_password(payload.student_password),
+        role="student"
+    )
+    db.add(stu_user)
+    await db.flush()
+
+    # 2. Create Student Profile
+    student = Student(
+        user_id=stu_user.id,
+        roll_number=payload.roll_number,
+        department=payload.department,
+        semester=payload.semester,
+        batch_year=payload.batch_year
+    )
+    db.add(student)
+    await db.flush()
+
+    # 3. Handle Parent User
+    parent_res = await db.execute(select(User).where(User.email == payload.parent_email))
+    parent_user = parent_res.scalar_one_or_none()
+
+    if not parent_user:
+        parent_user = User(
+            name=payload.parent_name,
+            email=payload.parent_email,
+            phone=payload.parent_phone,
+            hashed_password=hash_password(payload.parent_password),
+            role="parent"
+        )
+        db.add(parent_user)
+        await db.flush()
+
+    # 4. Link Parent and Student
+    link = ParentStudent(parent_id=parent_user.id, student_id=student.id)
+    db.add(link)
+
+    await db.commit()
+    return {"message": "Enrollment successful", "student_user_id": stu_user.id, "student_id": student.id}

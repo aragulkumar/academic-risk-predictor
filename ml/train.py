@@ -28,7 +28,7 @@ def generate_data(n: int = 2000) -> pd.DataFrame:
     attendance = np.clip(np.random.normal(75, 18, n), 0, 100)
     internal_marks = np.clip(np.random.normal(65, 20, n), 0, 100)
     submission_rate = np.clip(np.random.normal(80, 15, n), 0, 100)
-    semester = np.random.randint(1, 9, n).astype(float)
+    semester = np.random.randint(4, 9, n).astype(float)
 
     # Simulated trend: decrease in last 4 weeks
     attendance_trend = np.random.normal(-2, 5, n)  # negative = declining

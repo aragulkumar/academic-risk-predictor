@@ -10,7 +10,11 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'student', phone: '' })
+  const [form, setForm] = useState({ 
+    name: '', email: '', password: '', role: 'student', phone: '',
+    roll_number: '', department: 'Computer Science', semester: 1, batch_year: new Date().getFullYear(),
+    parent_name: '', parent_email: '', parent_phone: '', parent_password: ''
+  })
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => { fetchData() }, [])
@@ -35,10 +39,36 @@ export default function AdminDashboard() {
     e.preventDefault()
     setSubmitting(true)
     try {
-      await api.post('/api/admin/users', form)
-      toast.success('User created successfully')
+      if (form.role === 'student') {
+        // Use the specialized enrollment API
+        await api.post('/api/admin/enroll-student', {
+          student_name: form.name,
+          student_email: form.email,
+          student_password: form.password,
+          roll_number: form.roll_number,
+          department: form.department,
+          semester: form.semester,
+          batch_year: form.batch_year,
+          parent_name: form.parent_name,
+          parent_email: form.parent_email,
+          parent_phone: form.parent_phone,
+          parent_password: form.parent_password
+        })
+        toast.success('Student & Parent enrolled successfully')
+      } else {
+        // Standard user creation
+        await api.post('/api/admin/users', {
+          name: form.name, email: form.email, password: form.password, role: form.role, phone: form.phone
+        })
+        toast.success('User created successfully')
+      }
+      
       setShowModal(false)
-      setForm({ name: '', email: '', password: '', role: 'student', phone: '' })
+      setForm({ 
+        name: '', email: '', password: '', role: 'student', phone: '',
+        roll_number: '', department: 'Computer Science', semester: 1, batch_year: new Date().getFullYear(),
+        parent_name: '', parent_email: '', parent_phone: '', parent_password: ''
+      })
       fetchData()
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Failed to create user')
@@ -167,28 +197,73 @@ export default function AdminDashboard() {
               <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-300 text-xl">✕</button>
             </div>
             <form onSubmit={handleCreateUser} className="space-y-4">
-              {[
-                { label: 'Full Name', key: 'name', type: 'text', placeholder: 'Dr. Jane Smith' },
-                { label: 'Email', key: 'email', type: 'email', placeholder: 'jane@institution.edu' },
-                { label: 'Password', key: 'password', type: 'password', placeholder: '••••••••' },
-                { label: 'Phone (optional)', key: 'phone', type: 'tel', placeholder: '+91 99999 00000' },
-              ].map(({ label, key, type, placeholder }) => (
-                <div key={key}>
-                  <label className="label">{label}</label>
-                  <input type={type} className="input" placeholder={placeholder}
-                    value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                    required={key !== 'phone'} />
-                </div>
-              ))}
               <div>
                 <label className="label">Role</label>
                 <select className="input" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                  <option value="student">Student</option>
+                  <option value="student">Student & Parent Pair</option>
                   <option value="mentor">Mentor</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
-              <div className="flex gap-3 pt-2">
+
+              {/* Base User Details */}
+              <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2">
+                <div className="col-span-2"><h4 className="text-sm font-bold text-gray-300">{form.role === 'student' ? 'Student Details' : 'User Details'}</h4></div>
+                {[
+                  { label: 'Full Name', key: 'name', type: 'text', placeholder: 'Name' },
+                  { label: 'Email', key: 'email', type: 'email', placeholder: 'email@...' },
+                  { label: 'Password', key: 'password', type: 'password', placeholder: '••••••••' },
+                  { label: 'Phone', key: 'phone', type: 'tel', placeholder: '+91...' },
+                ].map(({ label, key, type, placeholder }) => (
+                   <div key={key}>
+                     <label className="label">{label}</label>
+                     <input type={type} className="input text-sm" placeholder={placeholder}
+                       value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                       required={key !== 'phone'} />
+                   </div>
+                ))}
+              </div>
+
+              {/* Additional Student Details */}
+              {form.role === 'student' && (
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { label: 'Roll Number', key: 'roll_number', type: 'text', placeholder: 'CS001' },
+                    { label: 'Department', key: 'department', type: 'text', placeholder: 'IT' },
+                    { label: 'Semester', key: 'semester', type: 'number', placeholder: '1' },
+                    { label: 'Batch Year', key: 'batch_year', type: 'number', placeholder: '2024' },
+                  ].map(({ label, key, type, placeholder }) => (
+                     <div key={key}>
+                       <label className="label">{label}</label>
+                       <input type={type} className="input text-sm" placeholder={placeholder}
+                         value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: type === 'number' ? +e.target.value : e.target.value }))}
+                         required />
+                     </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Parent Details section */}
+              {form.role === 'student' && (
+                 <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2 bg-purple-900/10 p-3 rounded-lg border border-purple-500/20">
+                   <div className="col-span-2"><h4 className="text-sm font-bold text-purple-300">Parent / Guardian Info</h4></div>
+                   {[
+                     { label: "Parent's Name", key: 'parent_name', type: 'text', placeholder: 'Name' },
+                     { label: "Parent's Email", key: 'parent_email', type: 'email', placeholder: 'email@...' },
+                     { label: "Parent's Phone", key: 'parent_phone', type: 'tel', placeholder: '+91...' },
+                     { label: "Parent's Password", key: 'parent_password', type: 'password', placeholder: '••••••••' },
+                   ].map(({ label, key, type, placeholder }) => (
+                      <div key={key}>
+                        <label className="label text-purple-200">{label}</label>
+                        <input type={type} className="input text-sm border-purple-500/30 focus:border-purple-500" placeholder={placeholder}
+                          value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                          required />
+                      </div>
+                   ))}
+                 </div>
+              )}
+
+              <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">Cancel</button>
                 <button type="submit" disabled={submitting} className="btn-primary flex-1">
                   {submitting ? 'Creating...' : 'Create User'}
