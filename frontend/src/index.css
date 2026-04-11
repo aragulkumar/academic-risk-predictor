@@ -89,7 +89,7 @@
   }
 
   ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background-color: var(--surface-bg); }
+  ::-webkit-scrollbar-track { background-color: transparent; }
   ::-webkit-scrollbar-thumb {
     background-color: var(--surface-border);
     border-radius: 9999px;

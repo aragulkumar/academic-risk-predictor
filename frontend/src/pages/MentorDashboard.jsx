@@ -158,10 +158,10 @@ export default function MentorDashboard() {
   ]
 
   return (
-    <div className="flex" style={{ minHeight: '100vh' }}>
+    <div className="flex h-screen bg-surface-bg">
       <Sidebar />
 
-      <main className="flex-1 flex overflow-hidden" style={{ minHeight: '100vh' }}>
+      <main className="flex-1 flex overflow-hidden h-screen">
 
         {/* ── Left scrollable panel ── */}
         <div className="flex-1 overflow-auto">
@@ -217,9 +217,9 @@ export default function MentorDashboard() {
               <div className="card mb-6">
                 <h2 className="section-title mb-3">📤 Bulk Upload Assessment Data</h2>
                 <p className="text-xs text-text-secondary mb-4">
-                  Upload a <code className="bg-surface-hover px-1 rounded" style={{ color: 'var(--brand-500)' }}>.csv</code>{' '}
-                  or <code className="bg-surface-hover px-1 rounded" style={{ color: 'var(--brand-500)' }}>.xlsx</code> file
-                  with columns: roll_number, subject, semester, attendance_pct, internal_marks, assignment_submission_rate
+                  Upload a <code className="px-1.5 py-0.5 rounded font-mono font-semibold" style={{ background: 'rgba(99,102,241,0.12)', color: 'var(--brand-600)' }}>.csv</code>{' '}
+                  or <code className="px-1.5 py-0.5 rounded font-mono font-semibold" style={{ background: 'rgba(99,102,241,0.12)', color: 'var(--brand-600)' }}>.xlsx</code> file
+                  with columns: <span className="font-mono opacity-80">roll_number, subject, semester, attendance_pct, internal_marks, assignment_submission_rate</span>
                 </p>
                 <div
                   onDragOver={e => { e.preventDefault(); setDragOver(true) }}
