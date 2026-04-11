@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/client'
+import { useTheme } from '../context/ThemeContext'
 import Sidebar from '../components/Sidebar'
 import RiskBadge from '../components/RiskBadge'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -18,19 +19,19 @@ function MetricBar({ label, value, max = 100, unit = '%', color }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <p className="text-sm text-gray-300 font-medium">{label}</p>
-        <span className="text-xs tabular-nums text-gray-400 font-semibold">
+        <p className="text-sm text-text-primary font-medium">{label}</p>
+        <span className="text-xs tabular-nums text-text-secondary font-semibold">
           {typeof value === 'number' ? value.toFixed(1) : '—'}{unit}
         </span>
       </div>
-      <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
+      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: hoverBg }}>
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${pct}%`, background: barColor }}
         />
       </div>
       <div className="flex items-center justify-between mt-1">
-        <span className="text-xs text-gray-600">{pct}% of target</span>
+        <span className="text-xs text-text-muted">{pct}% of target</span>
         {pct >= 85 && <span className="text-xs text-teal-400 font-semibold">On Track</span>}
         {pct < 50 && <span className="text-xs text-red-400 font-semibold">Needs Attention</span>}
       </div>
@@ -39,6 +40,11 @@ function MetricBar({ label, value, max = 100, unit = '%', color }) {
 }
 
 export default function StudentDashboard() {
+  const { theme } = useTheme()
+  const isLight = theme !== 'dark'
+  const hoverBg = isLight ? '#edf1f7' : '#1c2128'
+  const rowHoverBg = isLight ? '#f1f5f9' : '#1c212880'
+
   const { user } = useAuth()
   const [scores, setScores] = useState([])
   const [student, setStudent] = useState(null)
@@ -107,8 +113,8 @@ export default function StudentDashboard() {
     const d = payload[0].payload
     return (
       <div className="bg-surface-card border border-surface-border rounded-xl p-3 text-xs shadow-xl">
-        <p className="text-gray-400">{d.date ?? d.week}</p>
-        <p className="text-base font-bold text-gray-100">{d.score?.toFixed(1)}<span className="text-gray-500"> / 100</span></p>
+        <p className="text-text-secondary">{d.date ?? d.week}</p>
+        <p className="text-base font-bold text-text-primary">{d.score?.toFixed(1)}<span className="text-text-secondary"> / 100</span></p>
       </div>
     )
   }
@@ -122,10 +128,10 @@ export default function StudentDashboard() {
           {/* Welcome header */}
           <div className="mb-8 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-100">
+              <h1 className="text-2xl font-bold text-text-primary">
                 Hey, {user?.name?.split(' ')[0]} 👋
               </h1>
-              <p className="text-gray-500 text-sm mt-1">Here's your academic wellness snapshot for this week</p>
+              <p className="text-text-secondary text-sm mt-1">Here's your academic wellness snapshot for this week</p>
             </div>
             <RiskBadge level={level} />
           </div>
@@ -136,12 +142,12 @@ export default function StudentDashboard() {
               {/* Risk Score Card */}
               <div className="lg:col-span-1">
                 <div className="card h-full" style={{ borderColor: RISK_COLORS[level] + '33' }}>
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">Current Risk Score</p>
+                  <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-4">Current Risk Score</p>
                   <div className="flex items-end gap-2 mb-4">
                     <span className="text-6xl font-black tabular-nums" style={{ color: RISK_COLORS[level] }}>
                       {latest?.score?.toFixed(0) ?? '—'}
                     </span>
-                    <span className="text-gray-500 text-lg pb-1">/ 100</span>
+                    <span className="text-text-secondary text-lg pb-1">/ 100</span>
                   </div>
 
                   {/* Ring progress */}
@@ -208,8 +214,8 @@ export default function StudentDashboard() {
                 {/* Academic Metrics — READ ONLY from database */}
                 <div className="card">
                   <div className="flex items-center justify-between mb-5">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Academic Metrics</p>
-                    <span className="text-xs text-gray-600 bg-surface-hover px-2 py-1 rounded-md">
+                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide">Academic Metrics</p>
+                    <span className="text-xs text-text-muted px-2 py-1 rounded-md" style={{ backgroundColor: hoverBg }}>
                       📊 From your dataset — read only
                     </span>
                   </div>
@@ -232,13 +238,13 @@ export default function StudentDashboard() {
                         value={assessment.assignment_submission_rate}
                         unit="%"
                       />
-                      <p className="text-xs text-gray-600 pt-2 border-t border-surface-border">
-                        Subject: <span className="text-gray-400">{assessment.subject}</span>
-                        &nbsp;·&nbsp; Semester: <span className="text-gray-400">{assessment.semester}</span>
+                      <p className="text-xs text-text-muted pt-2 border-t border-surface-border">
+                        Subject: <span className="text-text-secondary">{assessment.subject}</span>
+                        &nbsp;·&nbsp; Semester: <span className="text-text-secondary">{assessment.semester}</span>
                       </p>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 text-center py-6">
+                    <p className="text-sm text-text-secondary text-center py-6">
                       No assessment data available yet. Your mentor or admin will upload your scores.
                     </p>
                   )}
@@ -250,7 +256,7 @@ export default function StudentDashboard() {
                     <div className="text-2xl shrink-0">💡</div>
                     <div>
                       <p className="text-sm font-semibold text-brand-300 mb-1">Growth Insight</p>
-                      <p className="text-xs text-gray-400 leading-relaxed">
+                      <p className="text-xs text-text-secondary leading-relaxed">
                         Students who attend &gt;85% of classes improve their risk score by an average of
                         <span className="text-brand-400 font-semibold"> 22 points</span> within 3 weeks.
                         Your attendance is the highest-impact factor — you've got this!
@@ -266,16 +272,16 @@ export default function StudentDashboard() {
                 
                 {/* Daily Attendance Log */}
                 <div className="card">
-                  <h3 className="text-sm font-semibold text-gray-400 border-b border-surface-border pb-3 mb-3">📅 Daily Attendance Log</h3>
+                  <h3 className="text-sm font-semibold text-text-secondary border-b border-surface-border pb-3 mb-3">📅 Daily Attendance Log</h3>
                   {attendance.length === 0 ? (
-                    <p className="text-xs text-gray-600 py-4 text-center">No attendance records found.</p>
+                    <p className="text-xs text-text-muted py-4 text-center">No attendance records found.</p>
                   ) : (
                     <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2">
                       {attendance.map(a => (
                         <div key={a.id} className="flex justify-between items-center p-2 rounded bg-surface-hover/50 text-sm border border-surface-border">
                           <div>
-                            <span className="font-medium text-gray-300">{new Date(a.date).toLocaleDateString()}</span>
-                            <span className="text-xs text-gray-500 ml-2">{a.subject}</span>
+                            <span className="font-medium text-text-primary">{new Date(a.date).toLocaleDateString()}</span>
+                            <span className="text-xs text-text-secondary ml-2">{a.subject}</span>
                           </div>
                           <span className={a.is_present ? 'text-teal-400 font-semibold' : 'text-red-400 font-semibold'}>
                             {a.status}
@@ -288,16 +294,16 @@ export default function StudentDashboard() {
 
                 {/* Semester Results Log */}
                 <div className="card">
-                  <h3 className="text-sm font-semibold text-gray-400 border-b border-surface-border pb-3 mb-3">🎓 Semester Results</h3>
+                  <h3 className="text-sm font-semibold text-text-secondary border-b border-surface-border pb-3 mb-3">🎓 Semester Results</h3>
                   {semResults.length === 0 ? (
-                    <p className="text-xs text-gray-600 py-4 text-center">No semester results available.</p>
+                    <p className="text-xs text-text-muted py-4 text-center">No semester results available.</p>
                   ) : (
                     <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2">
                       {semResults.map(r => (
                         <div key={r.id} className="p-3 rounded bg-surface-hover/30 text-sm border border-surface-border flex justify-between items-center">
                           <div>
-                            <p className="font-medium text-brand-300">Semester {r.semester} <span className="text-gray-500 text-xs ml-1">({r.academic_year})</span></p>
-                            <p className="text-xs text-gray-400 mt-1">GPA: {r.gpa?.toFixed(2) ?? '-'} | Arrears: {r.arrears}</p>
+                            <p className="font-medium text-brand-300">Semester {r.semester} <span className="text-text-secondary text-xs ml-1">({r.academic_year})</span></p>
+                            <p className="text-xs text-text-secondary mt-1">GPA: {r.gpa?.toFixed(2) ?? '-'} | Arrears: {r.arrears}</p>
                           </div>
                           <span className={`px-2 py-1 rounded text-xs font-bold ${r.passed ? 'bg-teal-500/10 text-teal-400' : 'bg-red-500/10 text-red-400'}`}>
                             {r.status}
