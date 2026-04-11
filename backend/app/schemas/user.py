@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     role: str = "student"
     phone: str | None = None
 
@@ -36,5 +36,5 @@ class Token(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
