@@ -190,7 +190,7 @@ export default function AdminDashboard() {
 
       {/* Create User Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="card w-full max-w-xl animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden shadow-2xl">
             
             {/* Header - Fixed */}
