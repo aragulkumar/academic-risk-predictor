@@ -191,89 +191,101 @@ export default function AdminDashboard() {
       {/* Create User Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="card w-full max-w-md animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden bg-white">
+          <div className="card w-full max-w-xl animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden bg-white shadow-2xl">
             
             {/* Header - Fixed */}
             <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-white">
-              <h3 className="text-lg font-semibold text-text-primary">Create New User</h3>
-              <button onClick={() => setShowModal(false)} className="text-text-secondary hover:text-text-primary text-xl">✕</button>
+              <h3 className="text-xl font-bold text-text-primary">Create New User</h3>
+              <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors text-xl">✕</button>
             </div>
             
             {/* Scrollable Form Body */}
-            <form onSubmit={handleCreateUser} className="flex-1 overflow-y-auto flex flex-col">
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className="label">Role</label>
-                  <select className="input" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                    <option value="student">Student & Parent Pair</option>
-                    <option value="mentor">Mentor</option>
-                    <option value="admin">Admin</option>
+            <form onSubmit={handleCreateUser} className="flex-1 overflow-y-auto flex flex-col bg-surface-bg/30">
+              <div className="p-6 space-y-6">
+                
+                {/* Role Selection */}
+                <div className="bg-white p-5 rounded-2xl border border-surface-border shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
+                  <label className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3 block">Primary Role</label>
+                  <select className="input bg-surface-bg border-none font-semibold text-text-primary cursor-pointer hover:bg-surface-hover transition-colors" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+                    <option value="student">👨‍🎓 Student & Parent Pair</option>
+                    <option value="mentor">👨‍🏫 Mentor</option>
+                    <option value="admin">🛡️ Admin</option>
                   </select>
                 </div>
 
                 {/* Base User Details */}
-                <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2">
-                  <div className="col-span-2"><h4 className="text-sm font-bold text-text-primary">{form.role === 'student' ? 'Student Details' : 'User Details'}</h4></div>
+                <div className="bg-white p-6 rounded-2xl border border-surface-border shadow-sm space-y-5">
+                  <h4 className="text-xs font-bold text-text-primary uppercase tracking-widest border-b border-surface-border pb-3 shrink-0">
+                    {form.role === 'student' ? 'Student Details' : 'User Details'}
+                  </h4>
+                  <div className="grid grid-cols-2 gap-x-5 gap-y-4">
                   {[
-                    { label: 'Full Name', key: 'name', type: 'text', placeholder: 'Name' },
-                    { label: 'Email', key: 'email', type: 'email', placeholder: 'email@...' },
+                    { label: 'Full Name', key: 'name', type: 'text', placeholder: 'e.g. Anjali Sharma' },
+                    { label: 'Email Address', key: 'email', type: 'email', placeholder: 'email@college.edu' },
                     { label: 'Password', key: 'password', type: 'password', placeholder: '••••••••' },
-                    { label: 'Phone', key: 'phone', type: 'tel', placeholder: '+91...' },
+                    { label: 'Phone Number', key: 'phone', type: 'tel', placeholder: '+91...' },
                   ].map(({ label, key, type, placeholder }) => (
                      <div key={key}>
-                       <label className="label">{label}</label>
+                       <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 block opacity-80">{label}</label>
                        <input type={type} className="input text-sm" placeholder={placeholder}
                          value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
                          required={key !== 'phone'} />
                      </div>
                   ))}
-                </div>
-
-                {/* Additional Student Details */}
-                {form.role === 'student' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { label: 'Roll Number', key: 'roll_number', type: 'text', placeholder: 'CS001' },
-                      { label: 'Department', key: 'department', type: 'text', placeholder: 'IT' },
-                      { label: 'Semester', key: 'semester', type: 'number', placeholder: '1' },
-                      { label: 'Batch Year', key: 'batch_year', type: 'number', placeholder: '2024' },
-                    ].map(({ label, key, type, placeholder }) => (
-                       <div key={key}>
-                         <label className="label">{label}</label>
-                         <input type={type} className="input text-sm" placeholder={placeholder}
-                           value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: type === 'number' ? +e.target.value : e.target.value }))}
-                           required />
-                       </div>
-                    ))}
                   </div>
-                )}
+
+                  {/* Additional Student Details */}
+                  {form.role === 'student' && (
+                    <div className="grid grid-cols-2 gap-x-5 gap-y-4 pt-5 mt-2 border-t border-surface-border/50">
+                      {[
+                        { label: 'Roll Number', key: 'roll_number', type: 'text', placeholder: 'CS001' },
+                        { label: 'Department', key: 'department', type: 'text', placeholder: 'Computer Science' },
+                        { label: 'Semester', key: 'semester', type: 'number', placeholder: '1' },
+                        { label: 'Batch Year', key: 'batch_year', type: 'number', placeholder: '2024' },
+                      ].map(({ label, key, type, placeholder }) => (
+                         <div key={key}>
+                           <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 block opacity-80">{label}</label>
+                           <input type={type} className="input text-sm" placeholder={placeholder}
+                             value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: type === 'number' ? +e.target.value : e.target.value }))}
+                             required />
+                         </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Parent Details section */}
                 {form.role === 'student' && (
-                   <div className="grid grid-cols-2 gap-4 border-t border-surface-border pt-4 mt-2 bg-brand-500/5 p-3 rounded-lg border border-brand-500/20">
-                     <div className="col-span-2"><h4 className="text-sm font-bold text-brand-600">Parent / Guardian Info</h4></div>
+                   <div className="bg-brand-50/50 p-6 rounded-2xl border border-brand-200 shadow-[0_4px_20px_rgba(99,102,241,0.05)] relative overflow-hidden">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                     <h4 className="text-xs font-bold text-brand-700 uppercase tracking-widest border-b border-brand-200/60 pb-3 mb-5 flex items-center gap-2">
+                       <span>👨‍👩‍👦</span> Parent / Guardian Info
+                     </h4>
+                     <div className="grid grid-cols-2 gap-x-5 gap-y-4 relative z-10">
                      {[
-                       { label: "Parent's Name", key: 'parent_name', type: 'text', placeholder: 'Name' },
-                       { label: "Parent's Email", key: 'parent_email', type: 'email', placeholder: 'email@...' },
-                       { label: "Parent's Phone", key: 'parent_phone', type: 'tel', placeholder: '+91...' },
-                       { label: "Parent's Password", key: 'parent_password', type: 'password', placeholder: '••••••••' },
+                       { label: "Name", key: 'parent_name', type: 'text', placeholder: "e.g. Ramesh's Parent" },
+                       { label: "Email", key: 'parent_email', type: 'email', placeholder: 'parent@email.com' },
+                       { label: "Phone", key: 'parent_phone', type: 'tel', placeholder: '+91...' },
+                       { label: "Login Password", key: 'parent_password', type: 'password', placeholder: '••••••••' },
                      ].map(({ label, key, type, placeholder }) => (
                         <div key={key}>
-                          <label className="label text-brand-600 opacity-90">{label}</label>
-                          <input type={type} className="input text-sm border-brand-500/30 focus:border-brand-500 bg-white" placeholder={placeholder}
+                          <label className="text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-1.5 block opacity-90">{label}</label>
+                          <input type={type} className="input text-sm border-brand-300 focus:border-brand-500 bg-white shadow-sm" placeholder={placeholder}
                             value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
                             required />
                         </div>
                      ))}
+                     </div>
                    </div>
                 )}
               </div>
 
               {/* Footer - Fixed */}
-              <div className="p-6 border-t border-surface-border bg-surface-hover/50 flex gap-3 shrink-0">
-                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">Cancel</button>
-                <button type="submit" disabled={submitting} className="btn-primary flex-1">
-                  {submitting ? 'Creating...' : 'Create User'}
+              <div className="p-6 border-t border-surface-border bg-white flex justify-end gap-3 shrink-0">
+                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary px-6 font-semibold">Cancel</button>
+                <button type="submit" disabled={submitting} className="btn-primary px-8 shadow-[0_4px_14px_rgba(99,102,241,0.35)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.45)]">
+                  {submitting ? 'Creating...' : '✓ Create User'}
                 </button>
               </div>
             </form>
