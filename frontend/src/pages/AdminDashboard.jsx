@@ -3,9 +3,21 @@ import api from '../api/client'
 import Sidebar from '../components/Sidebar'
 import StatCard from '../components/StatCard'
 import LoadingSpinner from '../components/LoadingSpinner'
+import { useTheme } from '../context/ThemeContext'
 import toast from 'react-hot-toast'
 
 export default function AdminDashboard() {
+  const { theme } = useTheme()
+  const isLight = theme !== 'dark'
+  // Explicit colors per theme — never depends on CSS variable resolution
+  const modalBg     = isLight ? '#ffffff' : '#161b22'
+  const modalBorder = isLight ? '#d1d9e6' : '#21262d'
+  const panelBg     = isLight ? '#f8fafc' : '#0d1117'
+  const headerBg    = isLight ? '#ffffff' : '#161b22'
+  const footerBg    = isLight ? '#f8fafc' : '#161b22'
+  const formBg      = isLight ? '#f0f4f9' : '#0d1117'
+  const textPrimary = isLight ? '#0d1117' : '#f1f5f9'
+  const textSecondary = isLight ? '#3b4558' : '#94a3b8'
   const [stats, setStats] = useState(null)
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -195,108 +207,157 @@ export default function AdminDashboard() {
 
       {/* Create User Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="card w-full max-w-xl animate-slide-up flex flex-col max-h-[95vh] p-0 overflow-hidden shadow-2xl">
-            
-            {/* Header - Fixed */}
-            <div className="flex items-center justify-between p-6 border-b border-surface-border shrink-0 bg-surface-card">
-              <h3 className="text-xl font-bold text-text-primary">Create New User</h3>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div
+            className="w-full max-w-xl animate-slide-up flex flex-col max-h-[95vh] overflow-hidden shadow-2xl rounded-2xl border"
+            style={{ background: modalBg, borderColor: modalBorder }}
+          >
+            {/* Header */}
+            <div
+              className="flex items-center justify-between p-6 border-b shrink-0"
+              style={{ background: headerBg, borderColor: modalBorder }}
+            >
+              <h3 className="text-xl font-bold" style={{ color: textPrimary }}>Create New User</h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary transition-colors text-xl"
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)' }}
+                className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors text-xl"
+                style={{ color: textSecondary }}
+                onMouseEnter={e => { e.currentTarget.style.background = isLight ? '#e2e8f0' : '#1c2128' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
               >✕</button>
             </div>
-            
+
             {/* Scrollable Form Body */}
-            <form onSubmit={handleCreateUser} className="flex-1 overflow-y-auto flex flex-col bg-surface-bg/30">
+            <form onSubmit={handleCreateUser} className="flex-1 overflow-y-auto flex flex-col" style={{ background: formBg }}>
               <div className="p-6 space-y-6">
-                
-                <div className="bg-surface-card p-5 rounded-2xl border border-surface-border shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
+
+                {/* Primary Role */}
+                <div
+                  className="p-5 rounded-2xl border shadow-sm relative overflow-hidden"
+                  style={{ background: modalBg, borderColor: modalBorder }}
+                >
+                  <div className="absolute top-0 left-0 w-1 h-full bg-brand-500" />
                   <label className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3 block">Primary Role</label>
-                  <select className="input cursor-pointer font-semibold" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                    <option value="student">👨‍🎓 Student & Parent Pair</option>
+                  <select
+                    className="w-full rounded-xl px-4 py-2.5 outline-none border font-semibold cursor-pointer transition-all"
+                    style={{ background: panelBg, color: textPrimary, borderColor: modalBorder }}
+                    value={form.role}
+                    onChange={e => setForm(f => ({ ...f, role: e.target.value }))}
+                  >
+                    <option value="student">👨‍🎓 Student &amp; Parent Pair</option>
                     <option value="mentor">👨‍🏫 Mentor</option>
                     <option value="admin">🛡️ Admin</option>
                   </select>
                 </div>
 
-                {/* Base User Details */}
-                <div className="bg-surface-card p-6 rounded-2xl border border-surface-border shadow-sm space-y-5">
-                  <h4 className="text-xs font-bold text-text-primary uppercase tracking-widest border-b border-surface-border pb-3 shrink-0">
+                {/* User / Student Details */}
+                <div
+                  className="p-6 rounded-2xl border shadow-sm space-y-5"
+                  style={{ background: modalBg, borderColor: modalBorder }}
+                >
+                  <h4
+                    className="text-xs font-bold uppercase tracking-widest border-b pb-3 shrink-0"
+                    style={{ color: textPrimary, borderColor: modalBorder }}
+                  >
                     {form.role === 'student' ? 'Student Details' : 'User Details'}
                   </h4>
                   <div className="grid grid-cols-2 gap-x-5 gap-y-4">
-                  {[
-                    { label: 'Full Name', key: 'name', type: 'text', placeholder: 'e.g. Anjali Sharma' },
-                    { label: 'Email Address', key: 'email', type: 'email', placeholder: 'email@college.edu' },
-                    { label: 'Password', key: 'password', type: 'password', placeholder: '••••••••' },
-                    { label: 'Phone Number', key: 'phone', type: 'tel', placeholder: '+91...' },
-                  ].map(({ label, key, type, placeholder }) => (
-                     <div key={key}>
-                       <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 block opacity-80">{label}</label>
-                       <input type={type} className="input text-sm" placeholder={placeholder}
-                         value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                         required={key !== 'phone'} />
-                     </div>
-                  ))}
+                    {[
+                      { label: 'Full Name',     key: 'name',     type: 'text',     placeholder: 'e.g. Anjali Sharma' },
+                      { label: 'Email Address', key: 'email',    type: 'email',    placeholder: 'email@college.edu' },
+                      { label: 'Password',      key: 'password', type: 'password', placeholder: '••••••••' },
+                      { label: 'Phone Number',  key: 'phone',    type: 'tel',      placeholder: '+91...' },
+                    ].map(({ label, key, type, placeholder }) => (
+                      <div key={key}>
+                        <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: textSecondary }}>{label}</label>
+                        <input
+                          type={type}
+                          className="w-full rounded-xl px-4 py-2.5 outline-none border text-sm transition-all"
+                          style={{ background: panelBg, color: textPrimary, borderColor: modalBorder }}
+                          placeholder={placeholder}
+                          value={form[key]}
+                          onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                          required={key !== 'phone'}
+                        />
+                      </div>
+                    ))}
                   </div>
 
-                  {/* Additional Student Details */}
+                  {/* Student-only extra fields */}
                   {form.role === 'student' && (
-                    <div className="grid grid-cols-2 gap-x-5 gap-y-4 pt-5 mt-2 border-t border-surface-border/50">
+                    <div className="grid grid-cols-2 gap-x-5 gap-y-4 pt-5 mt-2 border-t" style={{ borderColor: modalBorder }}>
                       {[
-                        { label: 'Roll Number', key: 'roll_number', type: 'text', placeholder: 'CS001' },
-                        { label: 'Department', key: 'department', type: 'text', placeholder: 'Computer Science' },
-                        { label: 'Semester', key: 'semester', type: 'number', placeholder: '1' },
-                        { label: 'Batch Year', key: 'batch_year', type: 'number', placeholder: '2024' },
+                        { label: 'Roll Number', key: 'roll_number', type: 'text',   placeholder: 'CS001' },
+                        { label: 'Department',  key: 'department',  type: 'text',   placeholder: 'Computer Science' },
+                        { label: 'Semester',    key: 'semester',    type: 'number', placeholder: '1' },
+                        { label: 'Batch Year',  key: 'batch_year',  type: 'number', placeholder: '2024' },
                       ].map(({ label, key, type, placeholder }) => (
-                         <div key={key}>
-                           <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 block opacity-80">{label}</label>
-                           <input type={type} className="input text-sm" placeholder={placeholder}
-                             value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: type === 'number' ? +e.target.value : e.target.value }))}
-                             required />
-                         </div>
+                        <div key={key}>
+                          <label className="text-[11px] font-bold uppercase tracking-wider mb-1.5 block" style={{ color: textSecondary }}>{label}</label>
+                          <input
+                            type={type}
+                            className="w-full rounded-xl px-4 py-2.5 outline-none border text-sm transition-all"
+                            style={{ background: panelBg, color: textPrimary, borderColor: modalBorder }}
+                            placeholder={placeholder}
+                            value={form[key]}
+                            onChange={e => setForm(f => ({ ...f, [key]: type === 'number' ? +e.target.value : e.target.value }))}
+                            required
+                          />
+                        </div>
                       ))}
                     </div>
                   )}
                 </div>
 
-                {/* Parent Details section */}
+                {/* Parent Details */}
                 {form.role === 'student' && (
-                   <div
-                     className="p-6 rounded-2xl border shadow-[0_4px_20px_rgba(99,102,241,0.05)] relative overflow-hidden"
-                     style={{ background: 'color-mix(in srgb, var(--brand-500) 4%, var(--surface-card))', borderColor: 'color-mix(in srgb, var(--brand-500) 25%, var(--surface-border))' }}
-                   >
-                     <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-                     <h4 className="text-xs font-bold text-brand-700 uppercase tracking-widest border-b border-brand-200/60 pb-3 mb-5 flex items-center gap-2">
-                       <span>👨‍👩‍👦</span> Parent / Guardian Info
-                     </h4>
-                     <div className="grid grid-cols-2 gap-x-5 gap-y-4 relative z-10">
-                     {[
-                       { label: "Name", key: 'parent_name', type: 'text', placeholder: "e.g. Ramesh's Parent" },
-                       { label: "Email", key: 'parent_email', type: 'email', placeholder: 'parent@email.com' },
-                       { label: "Phone", key: 'parent_phone', type: 'tel', placeholder: '+91...' },
-                       { label: "Login Password", key: 'parent_password', type: 'password', placeholder: '••••••••' },
-                     ].map(({ label, key, type, placeholder }) => (
+                  <div
+                    className="p-6 rounded-2xl border shadow-sm relative overflow-hidden"
+                    style={{
+                      background: isLight ? '#f0f4ff' : '#0f1320',
+                      borderColor: isLight ? '#c7d2fe' : '#2d3a6b',
+                    }}
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+                    <h4 className="text-xs font-bold text-brand-600 uppercase tracking-widest pb-3 mb-5 border-b border-brand-200/50 flex items-center gap-2">
+                      <span>👨‍👩‍👦</span> Parent / Guardian Info
+                    </h4>
+                    <div className="grid grid-cols-2 gap-x-5 gap-y-4 relative z-10">
+                      {[
+                        { label: 'Name',          key: 'parent_name',     type: 'text',     placeholder: "e.g. Ramesh's Parent" },
+                        { label: 'Email',          key: 'parent_email',    type: 'email',    placeholder: 'parent@email.com' },
+                        { label: 'Phone',          key: 'parent_phone',    type: 'tel',      placeholder: '+91...' },
+                        { label: 'Login Password', key: 'parent_password', type: 'password', placeholder: '••••••••' },
+                      ].map(({ label, key, type, placeholder }) => (
                         <div key={key}>
-                          <label className="text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-1.5 block opacity-90">{label}</label>
-                          <input type={type} className="input text-sm" placeholder={placeholder}
-                            value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                            required />
+                          <label className="text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-1.5 block">{label}</label>
+                          <input
+                            type={type}
+                            className="w-full rounded-xl px-4 py-2.5 outline-none border text-sm transition-all"
+                            style={{
+                              background: isLight ? '#ffffff' : '#0d1117',
+                              color: textPrimary,
+                              borderColor: isLight ? '#c7d2fe' : '#2d3a6b',
+                            }}
+                            placeholder={placeholder}
+                            value={form[key]}
+                            onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                            required
+                          />
                         </div>
-                     ))}
-                     </div>
-                   </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {/* Footer - Fixed */}
-              <div className="p-6 border-t border-surface-border bg-surface-card flex justify-end gap-3 shrink-0">
+              {/* Footer */}
+              <div
+                className="p-6 border-t flex justify-end gap-3 shrink-0"
+                style={{ background: footerBg, borderColor: modalBorder }}
+              >
                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary px-6 font-semibold">Cancel</button>
-                <button type="submit" disabled={submitting} className="btn-primary px-8 shadow-[0_4px_14px_rgba(99,102,241,0.35)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.45)]">
+                <button type="submit" disabled={submitting} className="btn-primary px-8">
                   {submitting ? 'Creating...' : '✓ Create User'}
                 </button>
               </div>
